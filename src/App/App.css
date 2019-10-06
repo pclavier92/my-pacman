@@ -1,14 +1,17 @@
 .App {
   text-align: center;
+  display: flex;
+  flex-flow: column;
+  height: 100%;
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 10vmax;
 }
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  min-height: 40vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,4 +22,9 @@
 
 .App-link {
   color: #09d3ac;
+}
+
+footer {
+  flex: none;
+  background-color: #282c34;
 }

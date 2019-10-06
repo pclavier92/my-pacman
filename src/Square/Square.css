@@ -1,0 +1,36 @@
+.square {
+  height: 40px;
+  width: 40px;
+  display: inline-block;
+  background-color: #282c34;  
+  text-align: center;
+  vertical-align: top;
+
+}
+
+.pacman {
+  max-width: 100%;
+  max-height: 100%;  
+}
+
+.right {
+  transform: rotate(0deg);
+}
+
+.down {
+  transform: rotate(90deg);
+}
+
+.left {
+  transform: scaleX(-1);
+}
+
+.up {
+  transform: rotate(-90deg);
+}
+
+.dot {
+  color: yellow;
+  text-align: center;
+  vertical-align: top;
+}
