@@ -269,7 +269,6 @@ class Game extends React.Component {
     );
     return (
       <div className="game">
-        <Start isPlaying={isPlaying} onClick={this.handleStart} />
         <div className="board" tabIndex="0" onKeyDown={this.movePacman.bind(this)}>
           { Board }
           <Modal 
@@ -278,6 +277,7 @@ class Game extends React.Component {
             isGamePaused={isGamePaused}
           />
         </div>
+        <Start isPlaying={isPlaying} onClick={this.handleStart} />
       </div>
     );
   } 
