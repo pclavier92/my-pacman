@@ -83,6 +83,7 @@ class Game extends React.Component {
       isGameWon: false,
       isGamePaused: false,
       isPlaying: true,
+      lastKeyMove: null,
       pacman: {
         row: 0,
         column: 0
@@ -112,6 +113,8 @@ class Game extends React.Component {
     if (this.checkForWin()) return;
     const posibleMoves = this.setGhostDirection();
     this.moveGhost(posibleMoves);
+    const { lastKeyMove } = this.state;
+    this.movePacman({ key: lastKeyMove })
   }
   
   checkForWin() {
@@ -216,7 +219,7 @@ class Game extends React.Component {
   }
 
   movePacman(event) {
-    let { board, pacman, ghost, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
+    let { board, pacman, ghost, lastKeyMove, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
     if (isGameOver || (!isGameWon && !isPlaying) ) return;
     const { key } = event;
     if (isGamePaused && key !== SPACE_KEY) return;
@@ -226,24 +229,28 @@ class Game extends React.Component {
         board[pacman.row][pacman.column] = '';
         pacman.column--;
         board[pacman.row][pacman.column] = 'pacman-left';
+        lastKeyMove = ARROW_LEFT_KEY;
         break;
       case ARROW_UP_KEY:
         if ( pacman.row === 0 ) return;
         board[pacman.row][pacman.column] = '';
         pacman.row--;
         board[pacman.row][pacman.column] = 'pacman-up';
+        lastKeyMove = ARROW_UP_KEY;
         break;
       case ARROW_RIGHT_KEY:
         if ( pacman.column === COLUMNS-1 ) return;
         board[pacman.row][pacman.column] = '';
         pacman.column++;
         board[pacman.row][pacman.column] = 'pacman-right';
+        lastKeyMove = ARROW_RIGHT_KEY;
         break;
       case ARROW_DOWN_KEY:
         if ( pacman.row === ROWNS-1 ) return;
         board[pacman.row][pacman.column] = '';
         pacman.row++;
         board[pacman.row][pacman.column] = 'pacman-down';
+        lastKeyMove = ARROW_DOWN_KEY;
         break;
       case SPACE_KEY:
         this.pauseGame();
@@ -256,7 +263,7 @@ class Game extends React.Component {
       isPlaying = false;
       clearInterval(this.interval);
     }
-    this.setState({ board, pacman, isGameOver, isPlaying});
+    this.setState({ board, pacman, lastKeyMove, isGameOver, isPlaying});
   }
 
   render (){
