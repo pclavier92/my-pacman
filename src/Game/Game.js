@@ -251,7 +251,7 @@ class Game extends React.Component {
           isGameOver={isGameOver} 
           isGameWon={isGameWon} 
           isGamePaused={isGamePaused}
-          />
+        />
       </div>
     );
   } 

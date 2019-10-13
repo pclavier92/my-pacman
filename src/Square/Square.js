@@ -1,4 +1,5 @@
 import React from 'react';
+import dot from './dot.png';
 import pacman from './pacman.png';
 import ghost from './ghost.png';
 import './Square.css';
@@ -9,8 +10,8 @@ const pacmanLeft = <img src={pacman} className="pacman left" alt="" />;
 const pacmanUp = <img src={pacman} className="pacman up" alt="" />;
 const ghostRight = <img src={ghost} className="ghost right" alt="" />;
 const ghostLeft = <img src={ghost} className="ghost left" alt="" />;
-const dotSquare = <span className="dot">&middot;</span>;
-const bigDotSquare = <span className="dot">&bull;</span>;
+const dotSquare = <img src={dot} className="dot" alt="" />;
+const bigDotSquare = <img src={dot} className="bigdot" alt="" />;
 
 const Square = ({ type }) => {
   let squareContent = null;

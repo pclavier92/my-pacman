@@ -18,13 +18,13 @@
   margin: 15% auto;
   padding: 20px;
   width: 80%;
-  
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
 .game-over {
-  color: red;
+  color: #bf2e1a;
 }
 
 .game-won {
-  color: yellow;
+  color: #f2f000;
 }
