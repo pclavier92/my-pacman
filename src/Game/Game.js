@@ -54,6 +54,7 @@ class Game extends React.Component {
       }
     };
     this.nextTurn = this.nextTurn.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
     this.handleStart = this.handleStart.bind(this);
   }
 
@@ -78,6 +79,8 @@ class Game extends React.Component {
   }
 
   pauseGame() {
+    const { isPlaying } = this.state;
+    if (!isPlaying) return;
     let { isGamePaused } = this.state;
     isGamePaused = !isGamePaused;
     if (isGamePaused) {
@@ -98,7 +101,7 @@ class Game extends React.Component {
       posibleGhostMoves = this.setGhostDirection();
     }
     this.moveGhost(posibleGhostMoves);
-    this.movePacman({ key: lastKeyMove });
+    this.movePacman(lastKeyMove);
   }
   
   checkForWin() {
@@ -160,7 +163,8 @@ class Game extends React.Component {
   }
 
   moveGhost(posibleMoves) {
-    let { board, ghost, pacman, isGameOver, isPlaying } = this.state;
+    const { pacman } = this.state;
+    let { board, ghost } = this.state;
     const ammountMoves = posibleMoves.length;
     const nextMove = posibleMoves[Math.floor(Math.random() * ammountMoves)];
     const { previousSquare } = ghost;
@@ -244,19 +248,35 @@ class Game extends React.Component {
         default:
         break;
     }
-    if (pacman.row === ghost.row && pacman.column === ghost.column) {
-      isGameOver = true;
-      isPlaying = false;
-      clearInterval(this.interval);
-    }
-    this.setState({ board, ghost, isGameOver, isPlaying});
+    // Check if game if over
+    this.checkForGameOver(pacman, ghost);
+    this.setState({ board, ghost });
   }
 
-  movePacman(event) {
-    let { board, pacman, ghost, lastKeyMove, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
-    if (isGameOver || (!isGameWon && !isPlaying) ) return;
+  onKeyDown(event){
     const { key } = event;
-    if (isGamePaused && key !== SPACE_KEY) return;
+    let { lastKeyMove } = this.state;
+    switch(key) {
+      case ARROW_LEFT_KEY:
+      case ARROW_UP_KEY:
+      case ARROW_RIGHT_KEY:
+      case ARROW_DOWN_KEY:
+        lastKeyMove = key;
+        break;
+      case SPACE_KEY:
+        this.pauseGame();
+        break;
+      default:
+        break;
+    }
+    this.setState({ lastKeyMove })
+  }
+
+  movePacman(key) {
+    let { board, pacman } = this.state;
+    const { ghost, isGameOver, isGameWon, isPlaying} = this.state;
+    if (isGameOver) return;
+    if (!isGameWon && !isPlaying) return;
     switch(key) {
       case ARROW_LEFT_KEY:
         if ( pacman.column === 0 ) return;
@@ -268,7 +288,6 @@ class Game extends React.Component {
           board[ghost.row][ghost.column] = 'scared-ghost';
         } 
         board[pacman.row][pacman.column] = 'pacman-left';
-        lastKeyMove = ARROW_LEFT_KEY;
         break;
       case ARROW_UP_KEY:
         if ( pacman.row === 0 ) return;
@@ -280,7 +299,6 @@ class Game extends React.Component {
           board[ghost.row][ghost.column] = 'scared-ghost';
         }
         board[pacman.row][pacman.column] = 'pacman-up';
-        lastKeyMove = ARROW_UP_KEY;
         break;
       case ARROW_RIGHT_KEY:
         if ( pacman.column === COLUMNS-1 ) return;
@@ -292,7 +310,6 @@ class Game extends React.Component {
           board[ghost.row][ghost.column] = 'scared-ghost';
         }
         board[pacman.row][pacman.column] = 'pacman-right';
-        lastKeyMove = ARROW_RIGHT_KEY;
         break;
       case ARROW_DOWN_KEY:
         if ( pacman.row === ROWNS-1 ) return;
@@ -304,34 +321,42 @@ class Game extends React.Component {
           board[ghost.row][ghost.column] = 'scared-ghost';
         }
         board[pacman.row][pacman.column] = 'pacman-down';
-        lastKeyMove = ARROW_DOWN_KEY;
-        break;
-      case SPACE_KEY:
-        this.pauseGame();
         break;
       default:
         break;
     }
+    // Check if game if over
+    this.checkForGameOver(pacman, ghost);
+    this.setState({ board, pacman });
+  }
+
+  checkForGameOver(pacman, ghost) {
+    if (ghost.isScared) return;
+    let { isGameOver, isPlaying } = this.state;
     if (pacman.row === ghost.row && pacman.column === ghost.column) {
       isGameOver = true;
       isPlaying = false;
       clearInterval(this.interval);
     }
-    this.setState({ board, pacman, lastKeyMove, isGameOver, isPlaying});
+    this.setState({ isGameOver, isPlaying });
   }
 
-  render (){
-    const { isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
-    const Board = this.state.board.map( row => (
+  renderBoard(){
+    const { board } = this.state;
+    return board.map( row => (
         <div>
           { row.map(t => <Square type={t} /> ) }
         </div> 
       ) 
     );
+  }
+
+  render (){
+    const { isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
     return (
-      <div className="game" tabIndex="0" onKeyDown={this.movePacman.bind(this)}>
+      <div className="game" tabIndex="0" onKeyDown={this.onKeyDown}>
         <div className="board">
-          { Board }
+          { this.renderBoard() }
           <Modal 
             isGameOver={isGameOver} 
             isGameWon={isGameWon}
