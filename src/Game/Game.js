@@ -1,6 +1,7 @@
 import React from 'react';
 import Square from '../Square';
 import './Game.css';
+import penha from '../media/ww-penha.mp3'
 
 import { getInitialBoard } from './initial-board';
 
@@ -58,6 +59,11 @@ class Game extends React.Component {
     this.handleStart = this.handleStart.bind(this);
   }
 
+  componentDidMount() {
+    this.backgroundMusic = new Audio(penha);
+    this.backgroundMusic.loop = true;
+  }
+
   componentWillUnmount() {
     clearInterval(this.interval);
   }
@@ -76,6 +82,10 @@ class Game extends React.Component {
     });
     clearInterval(this.interval);
     this.interval = setInterval(this.nextTurn, GHOST_SPEED);
+    const { isPlaying, isGameWon } = this.state;
+    if (!isPlaying && !isGameWon) {
+      this.backgroundMusic.play();
+    }
   }
 
   pauseGame() {
@@ -337,6 +347,7 @@ class Game extends React.Component {
       isGameOver = true;
       isPlaying = false;
       clearInterval(this.interval);
+      this.backgroundMusic.pause();
     }
     this.setState({ isGameOver, isPlaying });
   }
