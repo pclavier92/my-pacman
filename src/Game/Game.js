@@ -1,7 +1,9 @@
 import React from 'react';
 import Square from '../Square';
 import './Game.css';
-import penha from '../media/ww-penha.mp3'
+import penha from '../media/ww-penha.mp3';
+import win from '../media/mario-win.mp3';
+import gameover from '../media/mario-gameover.mp3';
 
 import { getInitialBoard } from './initial-board';
 
@@ -60,8 +62,10 @@ class Game extends React.Component {
   }
 
   componentDidMount() {
+    this.winningSound = new Audio(win);
+    this.gameoverSound = new Audio(gameover);
     this.backgroundMusic = new Audio(penha);
-    this.backgroundMusic.loop = true;
+    this.backgroundMusic.loop = true;  
   }
 
   componentWillUnmount() {
@@ -113,28 +117,6 @@ class Game extends React.Component {
     this.moveGhost(posibleGhostMoves);
     this.movePacman(lastKeyMove);
   }
-  
-  checkForWin() {
-    const { board, ghost } = this.state;
-    let isGameWon = true;
-    let isPlaying = true;
-    board.forEach( row => {
-      if (row.includes('dot') || 
-        row.includes('bigdot') || 
-        ghost.previousSquare === 'dot' || 
-        ghost.previousSquare === 'bigdot' 
-      ) {
-        isGameWon = false;
-      }
-    })
-    if (isGameWon){
-      clearInterval(this.interval);
-      ghost.row = -1;
-      isPlaying = false;
-    }
-    this.setState({ isGameWon, isPlaying, ghost});
-    return isGameWon;
-  }
 
   setGhostDirection() {
     let posibleMoves = [];
@@ -182,6 +164,7 @@ class Game extends React.Component {
       case MOVE_LEFT:
         if ( ghost.column === 0 ) {
           posibleMoves.splice(nextMove,1);
+          posibleMoves.push(MOVE_RIGHT);
           this.moveGhost(posibleMoves);
           return;
         }
@@ -201,6 +184,7 @@ class Game extends React.Component {
       case MOVE_UP:
         if ( ghost.row === 0 ) {
           posibleMoves.splice(nextMove,1);
+          posibleMoves.push(MOVE_DOWN);
           this.moveGhost(posibleMoves);
           return;
         }
@@ -220,6 +204,7 @@ class Game extends React.Component {
       case MOVE_RIGHT:
         if ( ghost.column === COLUMNS-1 ) {
           posibleMoves.splice(nextMove,1);
+          posibleMoves.push(MOVE_LEFT);
           this.moveGhost(posibleMoves);
           return;
         }
@@ -239,6 +224,7 @@ class Game extends React.Component {
       case MOVE_DOWN:
         if ( ghost.row === ROWNS-1 ) {
           posibleMoves.splice(nextMove,1);
+          posibleMoves.push(MOVE_UP);
           this.moveGhost(posibleMoves);
           return;
         }
@@ -340,6 +326,29 @@ class Game extends React.Component {
     this.setState({ board, pacman });
   }
 
+  checkForWin() {
+    const { board, ghost } = this.state;
+    let isGameWon = true;
+    let isPlaying = true;
+    board.forEach( row => {
+      if (row.includes('dot') || 
+        row.includes('bigdot') || 
+        ghost.previousSquare === 'dot' || 
+        ghost.previousSquare === 'bigdot' 
+      ) {
+        isGameWon = false;
+      }
+    })
+    if (isGameWon){
+      ghost.row = -1;
+      isPlaying = false;
+      clearInterval(this.interval);
+      this.winningSound.play();
+    }
+    this.setState({ isGameWon, isPlaying, ghost});
+    return isGameWon;
+  }
+
   checkForGameOver(pacman, ghost) {
     if (ghost.isScared) return;
     let { isGameOver, isPlaying } = this.state;
@@ -348,6 +357,7 @@ class Game extends React.Component {
       isPlaying = false;
       clearInterval(this.interval);
       this.backgroundMusic.pause();
+      this.gameoverSound.play();
     }
     this.setState({ isGameOver, isPlaying });
   }
