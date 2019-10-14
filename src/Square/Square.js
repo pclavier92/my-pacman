@@ -2,6 +2,7 @@ import React from 'react';
 import dot from './dot.png';
 import pacman from './pacman.png';
 import ghost from './ghost.png';
+import scaredGhost from './scared-ghost.png';
 import './Square.css';
 
 const pacmanRight = <img src={pacman} className="pacman right" alt="" />;
@@ -10,6 +11,7 @@ const pacmanLeft = <img src={pacman} className="pacman left" alt="" />;
 const pacmanUp = <img src={pacman} className="pacman up" alt="" />;
 const ghostRight = <img src={ghost} className="ghost right" alt="" />;
 const ghostLeft = <img src={ghost} className="ghost left" alt="" />;
+const scaredGhostSquare = <img src={scaredGhost} className="ghost" alt="" />;
 const dotSquare = <img src={dot} className="dot" alt="" />;
 const bigDotSquare = <img src={dot} className="bigdot" alt="" />;
 
@@ -33,6 +35,9 @@ const Square = ({ type }) => {
       break;
     case "ghost-left":  
       squareContent = ghostLeft;
+      break;
+    case "scared-ghost":  
+      squareContent = scaredGhostSquare;
       break;
     case "dot":
         squareContent = dotSquare;

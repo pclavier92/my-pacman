@@ -1,40 +1,14 @@
 import React from 'react';
-
 import Square from '../Square';
 import './Game.css';
+
+import { getInitialBoard } from './initial-board';
 
 // Settings
 const ROWNS = 10;
 const COLUMNS = 25;
-const GHOST_SPEED = 250;
-
-const EMPTY = {
-  isWalkable: true,
-  render: ''
-}
-
-const DOT = {
-  isWalkable: true,
-  render: 'dot'
-}
-
-const BIG_DOT = {
-  isWalkable: true,
-  render: 'bigdot'
-}
-
-const INITIAL_BOARD = [
-  ['pacman-right', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'bigdot'],
-  ['dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot'],
-  ['dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot'],
-  ['dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot'],
-  ['dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot'],
-  ['dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot'],
-  ['dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot'],
-  ['dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot'],
-  ['dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot'],
-  ['bigdot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'dot', 'ghost-left']
- ];
+const GHOST_SPEED = 250; // move every X ms
+const SCARED_SECONDS = 3; // ghost is scared for 3 seconds
 
 // Config
 const MOVE_LEFT = 1;
@@ -45,28 +19,40 @@ const ARROW_LEFT_KEY = 'ArrowLeft';
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_RIGHT_KEY = 'ArrowRight';
 const ARROW_DOWN_KEY = 'ArrowDown';
-const SPACE_KEY = ' '
+const SPACE_KEY = ' ';
+
+const INITIAL_STATE = {
+  board: getInitialBoard(),
+  isGameOver: false,
+  isGameWon: false,
+  isGamePaused: false,
+  isPlaying: false,
+  lastKeyMove: null,
+  pacman: {
+    row: 0,
+    column: 0
+  },
+  ghost: {
+    row: ROWNS-1,
+    column: COLUMNS-1,
+    previousSquare: 'bigdot',
+    isScared: false,
+    scaredCounter: 0
+  }
+};
 
 class Game extends React.Component {
   constructor(props) {
     super(props);
-    const initialBoard = INITIAL_BOARD.map(row => row.slice());
     this.state = {
-      board: initialBoard,
-      isGameOver: false,
-      isGameWon: false,
-      isGamePaused: false,
-      isPlaying: false,
+      ...INITIAL_STATE,
       pacman: {
-        row: 0,
-        column: 0
+        ...INITIAL_STATE.pacman
       },
       ghost: {
-        row: ROWNS-1,
-        column: COLUMNS-1,
-        previousSquare: 'bigdot'
+        ...INITIAL_STATE.ghost
       }
-    }
+    };
     this.nextTurn = this.nextTurn.bind(this);
     this.handleStart = this.handleStart.bind(this);
   }
@@ -76,24 +62,17 @@ class Game extends React.Component {
   }
 
   handleStart() {
-    const initialBoard = INITIAL_BOARD.map(row => row.slice());
     this.setState({
-      board: initialBoard,
-      isGameOver: false,
-      isGameWon: false,
-      isGamePaused: false,
+      ...INITIAL_STATE,
+      board: getInitialBoard(),
       isPlaying: true,
-      lastKeyMove: null,
       pacman: {
-        row: 0,
-        column: 0
+        ...INITIAL_STATE.pacman
       },
       ghost: {
-        row: ROWNS-1,
-        column: COLUMNS-1,
-        previousSquare: 'bigdot'
+        ...INITIAL_STATE.ghost
       }
-    })
+    });
     clearInterval(this.interval);
     this.interval = setInterval(this.nextTurn, GHOST_SPEED);
   }
@@ -111,10 +90,15 @@ class Game extends React.Component {
 
   nextTurn() {
     if (this.checkForWin()) return;
-    const posibleMoves = this.setGhostDirection();
-    this.moveGhost(posibleMoves);
-    const { lastKeyMove } = this.state;
-    this.movePacman({ key: lastKeyMove })
+    const { ghost, lastKeyMove } = this.state;
+    let posibleGhostMoves;
+    if (ghost.isScared) {
+      posibleGhostMoves = this.setScaredGhostDirection();
+    } else {
+      posibleGhostMoves = this.setGhostDirection();
+    }
+    this.moveGhost(posibleGhostMoves);
+    this.movePacman({ key: lastKeyMove });
   }
   
   checkForWin() {
@@ -157,6 +141,24 @@ class Game extends React.Component {
     return posibleMoves;
   }
 
+  setScaredGhostDirection() {
+    let posibleMoves = [];
+    const { pacman, ghost } = this.state;
+    if ( pacman.row >= ghost.row ) {
+      posibleMoves.push(MOVE_UP);
+    }
+    if ( pacman.row <= ghost.row ) {
+      posibleMoves.push(MOVE_DOWN);
+    }
+    if ( pacman.column >= ghost.column ) {
+      posibleMoves.push(MOVE_LEFT);
+    }
+    if ( pacman.column <= ghost.column ) {
+      posibleMoves.push(MOVE_RIGHT);
+    }
+    return posibleMoves;
+  }
+
   moveGhost(posibleMoves) {
     let { board, ghost, pacman, isGameOver, isPlaying } = this.state;
     const ammountMoves = posibleMoves.length;
@@ -172,7 +174,15 @@ class Game extends React.Component {
         board[ghost.row][ghost.column] = previousSquare;
         ghost.column--;
         ghost.previousSquare = board[ghost.row][ghost.column];
-        board[ghost.row][ghost.column] = 'ghost-left';
+        if (ghost.isScared) {
+          board[ghost.row][ghost.column] = 'scared-ghost';
+          ghost.scaredCounter--;
+          if( ghost.scaredCounter === 0 ){
+            ghost.isScared = false;
+          }
+        } else {
+          board[ghost.row][ghost.column] = 'ghost-left';
+        }
         break;
       case MOVE_UP:
         if ( ghost.row === 0 ) {
@@ -183,7 +193,15 @@ class Game extends React.Component {
         board[ghost.row][ghost.column] = previousSquare;
         ghost.row--;
         ghost.previousSquare = board[ghost.row][ghost.column];
-        board[ghost.row][ghost.column] = 'ghost-right';
+        if (ghost.isScared) {
+          board[ghost.row][ghost.column] = 'scared-ghost';
+          ghost.scaredCounter--;
+          if( ghost.scaredCounter === 0 ){
+            ghost.isScared = false;
+          }
+        } else {
+          board[ghost.row][ghost.column] = 'ghost-right';
+        }
         break;
       case MOVE_RIGHT:
         if ( ghost.column === COLUMNS-1 ) {
@@ -194,7 +212,15 @@ class Game extends React.Component {
         board[ghost.row][ghost.column] = previousSquare;
         ghost.column++;
         ghost.previousSquare = board[ghost.row][ghost.column];
-        board[ghost.row][ghost.column] = 'ghost-right';
+        if (ghost.isScared) {
+          board[ghost.row][ghost.column] = 'scared-ghost';
+          ghost.scaredCounter--;
+          if( ghost.scaredCounter === 0 ){
+            ghost.isScared = false;
+          }
+        } else {
+          board[ghost.row][ghost.column] = 'ghost-right';
+        }
         break;      
       case MOVE_DOWN:
         if ( ghost.row === ROWNS-1 ) {
@@ -205,7 +231,15 @@ class Game extends React.Component {
         board[ghost.row][ghost.column] = previousSquare;
         ghost.row++;
         ghost.previousSquare = board[ghost.row][ghost.column];
-        board[ghost.row][ghost.column] = 'ghost-left';
+        if (ghost.isScared) {
+          board[ghost.row][ghost.column] = 'scared-ghost';
+          ghost.scaredCounter--;
+          if( ghost.scaredCounter === 0 ){
+            ghost.isScared = false;
+          }
+        } else {
+          board[ghost.row][ghost.column] = 'ghost-left';
+        }
         break;
         default:
         break;
@@ -228,6 +262,11 @@ class Game extends React.Component {
         if ( pacman.column === 0 ) return;
         board[pacman.row][pacman.column] = '';
         pacman.column--;
+        if ( board[pacman.row][pacman.column] === 'bigdot' ){
+          ghost.isScared = true;
+          ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
+          board[ghost.row][ghost.column] = 'scared-ghost';
+        } 
         board[pacman.row][pacman.column] = 'pacman-left';
         lastKeyMove = ARROW_LEFT_KEY;
         break;
@@ -235,6 +274,11 @@ class Game extends React.Component {
         if ( pacman.row === 0 ) return;
         board[pacman.row][pacman.column] = '';
         pacman.row--;
+        if ( board[pacman.row][pacman.column] === 'bigdot' ){
+          ghost.isScared = true;
+          ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
+          board[ghost.row][ghost.column] = 'scared-ghost';
+        }
         board[pacman.row][pacman.column] = 'pacman-up';
         lastKeyMove = ARROW_UP_KEY;
         break;
@@ -242,6 +286,11 @@ class Game extends React.Component {
         if ( pacman.column === COLUMNS-1 ) return;
         board[pacman.row][pacman.column] = '';
         pacman.column++;
+        if ( board[pacman.row][pacman.column] === 'bigdot' ){
+          ghost.isScared = true;
+          ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
+          board[ghost.row][ghost.column] = 'scared-ghost';
+        }
         board[pacman.row][pacman.column] = 'pacman-right';
         lastKeyMove = ARROW_RIGHT_KEY;
         break;
@@ -249,6 +298,11 @@ class Game extends React.Component {
         if ( pacman.row === ROWNS-1 ) return;
         board[pacman.row][pacman.column] = '';
         pacman.row++;
+        if ( board[pacman.row][pacman.column] === 'bigdot' ){
+          ghost.isScared = true;
+          ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
+          board[ghost.row][ghost.column] = 'scared-ghost';
+        }
         board[pacman.row][pacman.column] = 'pacman-down';
         lastKeyMove = ARROW_DOWN_KEY;
         break;
@@ -275,8 +329,8 @@ class Game extends React.Component {
       ) 
     );
     return (
-      <div className="game">
-        <div className="board" tabIndex="0" onKeyDown={this.movePacman.bind(this)}>
+      <div className="game" tabIndex="0" onKeyDown={this.movePacman.bind(this)}>
+        <div className="board">
           { Board }
           <Modal 
             isGameOver={isGameOver} 
