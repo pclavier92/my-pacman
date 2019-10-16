@@ -86,8 +86,8 @@ class Game extends React.Component {
     });
     clearInterval(this.interval);
     this.interval = setInterval(this.nextTurn, GHOST_SPEED);
-    const { isPlaying, isGameWon } = this.state;
-    if (!isPlaying && !isGameWon) {
+    const { isPlaying } = this.state;
+    if (!isPlaying) {
       this.backgroundMusic.play();
     }
   }
@@ -343,6 +343,7 @@ class Game extends React.Component {
       ghost.row = -1;
       isPlaying = false;
       clearInterval(this.interval);
+      this.backgroundMusic.pause();
       this.winningSound.play();
     }
     this.setState({ isGameWon, isPlaying, ghost});
