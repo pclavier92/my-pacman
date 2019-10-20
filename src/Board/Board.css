@@ -1,6 +1,7 @@
 .board {
   background-color: #282c34;
   position: relative;
+  touch-action: none;
 }
 
 .modal {
