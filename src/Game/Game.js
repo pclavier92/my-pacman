@@ -1,5 +1,6 @@
 import React from 'react';
-import { Scroll } from '../utils';
+import { Swipeable } from 'react-swipeable';
+import { Scroll, Wrapper } from '../utils';
 import penha from '../media/ww-penha.mp3';
 import win from '../media/mario-win.mp3';
 import gameover from '../media/mario-gameover.mp3';
@@ -23,6 +24,10 @@ const ARROW_LEFT_KEY = 'ArrowLeft';
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_RIGHT_KEY = 'ArrowRight';
 const ARROW_DOWN_KEY = 'ArrowDown';
+const SWIPE_LEFT = 'Left';
+const SWIPE_UP = 'Up';
+const SWIPE_RIGHT = 'Right';
+const SWIPE_DOWN = 'Down';
 const SPACE_KEY = ' ';
 
 const INITIAL_STATE = {
@@ -59,6 +64,7 @@ class Game extends React.Component {
     };
     this.scroll = new Scroll();
     this.nextTurn = this.nextTurn.bind(this);
+    this.onSwiped = this.onSwiped.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.handleStart = this.handleStart.bind(this);
   }
@@ -255,6 +261,31 @@ class Game extends React.Component {
     this.setState({ board, ghost });
   }
 
+  onSwiped(event) {
+    const { dir } = event;
+    let { lastKeyMove } = this.state;
+    switch(dir) {
+      case SWIPE_LEFT:
+        lastKeyMove = ARROW_LEFT_KEY;
+        break;
+      case SWIPE_UP:
+        lastKeyMove = ARROW_UP_KEY;
+        break;
+      case SWIPE_RIGHT:
+        lastKeyMove = ARROW_RIGHT_KEY;
+        break;
+      case SWIPE_DOWN:
+        lastKeyMove = ARROW_DOWN_KEY;
+        break;
+      case SPACE_KEY:
+        this.pauseGame();
+        break;
+      default:
+        break;
+    }
+    this.setState({ lastKeyMove });
+  }
+
   onKeyDown(event){
     const { key } = event;
     let { lastKeyMove } = this.state;
@@ -271,7 +302,7 @@ class Game extends React.Component {
       default:
         break;
     }
-    this.setState({ lastKeyMove })
+    this.setState({ lastKeyMove });
   }
 
   movePacman(key) {
@@ -373,14 +404,22 @@ class Game extends React.Component {
 
   render (){
     const { board, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
+    const config = {
+     preventDefaultTouchmoveEvent: true,
+     trackMouse: true
+    };
     return (
       <div className="game" tabIndex="0" onKeyDown={this.onKeyDown}>
-        <Board 
-          board={board} 
-          isGameOver={isGameOver} 
-          isGameWon={isGameWon} 
-          isGamePaused={isGamePaused} 
-          />
+          <Swipeable onSwiped={this.onSwiped} {...config}>
+            <Wrapper>
+              <Board 
+                board={board} 
+                isGameOver={isGameOver} 
+                isGameWon={isGameWon} 
+                isGamePaused={isGamePaused} 
+              />
+            </Wrapper>
+          </Swipeable>
         <Start isPlaying={isPlaying} onClick={this.handleStart} />
       </div>
     );

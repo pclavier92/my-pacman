@@ -3,13 +3,11 @@ import { WindowSizeContext } from '../context';
 import Square from '../Square';
 import './Board.css';
 
-const MARGIN = 200;
-
 const computeSquareSize = (board, width, height) => {
   const rows = board.length;
   const columns = board[0].length;
-  const squareWidth = Math.ceil((width - MARGIN)/columns) ;
-  const squareHeight = Math.ceil((height - MARGIN)/rows);
+  const squareWidth = Math.ceil((width - width/10)/columns) ;
+  const squareHeight = Math.ceil((height - height/10)/rows);
   return Math.min(squareWidth, squareHeight);
 };
 
