@@ -1,13 +1,12 @@
 import React from 'react';
-import Square from '../Square';
-import './Game.css';
+import { Scroll } from '../utils';
 import penha from '../media/ww-penha.mp3';
 import win from '../media/mario-win.mp3';
 import gameover from '../media/mario-gameover.mp3';
-
+import Board from '../Board';
 import { getInitialBoard } from './initial-board';
+import './Game.css';
 
-import { Scroll } from '../utils';
 
 // Settings
 const ROWNS = 10;
@@ -372,28 +371,16 @@ class Game extends React.Component {
     this.setState({ isGameOver, isPlaying });
   }
 
-  renderBoard(){
-    const { board } = this.state;
-    return board.map( row => (
-        <div>
-          { row.map(t => <Square type={t} /> ) }
-        </div> 
-      ) 
-    );
-  }
-
   render (){
-    const { isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
+    const { board, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
     return (
       <div className="game" tabIndex="0" onKeyDown={this.onKeyDown}>
-        <div className="board">
-          { this.renderBoard() }
-          <Modal 
-            isGameOver={isGameOver} 
-            isGameWon={isGameWon}
-            isGamePaused={isGamePaused}
+        <Board 
+          board={board} 
+          isGameOver={isGameOver} 
+          isGameWon={isGameWon} 
+          isGamePaused={isGamePaused} 
           />
-        </div>
         <Start isPlaying={isPlaying} onClick={this.handleStart} />
       </div>
     );
@@ -403,16 +390,6 @@ class Game extends React.Component {
 const Start = ({ isPlaying, onClick }) => (
   <div className="start-button" onClick={onClick}>
     <h1 className="yellow-text">{ isPlaying ? 'RESTART' : 'START'}</h1>
-  </div>
-)
-
-const Modal = ({ isGameOver, isGameWon, isGamePaused }) => (
-  <div style={isGameOver || isGameWon || isGamePaused ? { display: 'block' } : {}} className="modal">
-    <div className="modal-content">
-      { isGameOver ? <h1 className="red-text">GAME OVER</h1> : null }
-      { isGameWon ? <h1 className="yellow-text">YOU HAVE WON!</h1> : null }
-      { isGamePaused ? <h1 className="yellow-text">PAUSE</h1> : null }
-    </div>
   </div>
 )
 
