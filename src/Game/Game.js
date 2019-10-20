@@ -7,6 +7,8 @@ import gameover from '../media/mario-gameover.mp3';
 
 import { getInitialBoard } from './initial-board';
 
+import { Scroll } from '../utils';
+
 // Settings
 const ROWNS = 10;
 const COLUMNS = 25;
@@ -56,6 +58,7 @@ class Game extends React.Component {
         ...INITIAL_STATE.ghost
       }
     };
+    this.scroll = new Scroll();
     this.nextTurn = this.nextTurn.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.handleStart = this.handleStart.bind(this);
@@ -86,6 +89,8 @@ class Game extends React.Component {
     });
     clearInterval(this.interval);
     this.interval = setInterval(this.nextTurn, GHOST_SPEED);
+    debugger;
+    this.scroll.disable();
     const { isPlaying } = this.state;
     if (!isPlaying) {
       this.backgroundMusic.play();
@@ -99,8 +104,10 @@ class Game extends React.Component {
     isGamePaused = !isGamePaused;
     if (isGamePaused) {
       clearInterval(this.interval);
+      this.scroll.enable();
     } else {
       this.interval = setInterval(this.nextTurn, GHOST_SPEED);
+      this.scroll.disable();
     }
     this.setState({ isGamePaused });
   }
@@ -345,6 +352,7 @@ class Game extends React.Component {
       clearInterval(this.interval);
       this.backgroundMusic.pause();
       this.winningSound.play();
+      this.scroll.enable();
     }
     this.setState({ isGameWon, isPlaying, ghost});
     return isGameWon;
@@ -359,6 +367,7 @@ class Game extends React.Component {
       clearInterval(this.interval);
       this.backgroundMusic.pause();
       this.gameoverSound.play();
+      this.scroll.enable();
     }
     this.setState({ isGameOver, isPlaying });
   }
