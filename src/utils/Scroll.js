@@ -21,6 +21,8 @@ class Scroll {
         if (window.addEventListener) // older FF
             window.addEventListener('DOMMouseScroll', preventDefault, false);
         document.addEventListener('wheel', preventDefault, {passive: false}); // Disable scrolling in Chrome
+        document.addEventListener('touchmove', preventDefault);
+        document.addEventListener('touchstart', preventDefault);
         window.onwheel = preventDefault; // modern standard
         window.onmousewheel = document.onmousewheel = preventDefault; // older browsers, IE
         window.ontouchmove  = preventDefault; // mobile
@@ -31,6 +33,8 @@ class Scroll {
         if (window.removeEventListener)
             window.removeEventListener('DOMMouseScroll', preventDefault, false);
         document.removeEventListener('wheel', preventDefault, {passive: false}); // Enable scrolling in Chrome
+        document.removeEventListener('touchmove', preventDefault);
+        document.removeEventListener('touchstart', preventDefault);
         window.onmousewheel = document.onmousewheel = null; 
         window.onwheel = null; 
         window.ontouchmove = null;  
