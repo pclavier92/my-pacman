@@ -8,12 +8,13 @@ import Board from '../Board';
 import { getInitialBoard } from './initial-board';
 import './Game.css';
 
-
 // Settings
 const ROWNS = 10;
 const COLUMNS = 25;
 const GHOST_SPEED = 250; // move every X ms
 const SCARED_SECONDS = 3; // ghost is scared for 3 seconds
+const DOT_POINTS = 50;
+const BIGDOT_POINTS = 200;
 
 // Config
 const MOVE_LEFT = 1;
@@ -29,6 +30,10 @@ const SWIPE_UP = 'Up';
 const SWIPE_RIGHT = 'Right';
 const SWIPE_DOWN = 'Down';
 const SPACE_KEY = ' ';
+const SWIPEABLE_CONFIG = {
+  preventDefaultTouchmoveEvent: true,
+  trackMouse: true
+ };
 
 const INITIAL_STATE = {
   board: getInitialBoard(),
@@ -37,6 +42,8 @@ const INITIAL_STATE = {
   isGamePaused: false,
   isPlaying: false,
   lastKeyMove: null,
+  points: 0,
+  highestScore: 0,
   pacman: {
     row: 0,
     column: 0
@@ -81,8 +88,10 @@ class Game extends React.Component {
   }
 
   handleStart() {
+    const { highestScore } = this.state;
     this.setState({
       ...INITIAL_STATE,
+      highestScore,
       board: getInitialBoard(),
       isPlaying: true,
       pacman: {
@@ -277,9 +286,6 @@ class Game extends React.Component {
       case SWIPE_DOWN:
         lastKeyMove = ARROW_DOWN_KEY;
         break;
-      case SPACE_KEY:
-        this.pauseGame();
-        break;
       default:
         break;
     }
@@ -306,61 +312,78 @@ class Game extends React.Component {
   }
 
   movePacman(key) {
+    let previousSquare, nextSquare;
     let { board, pacman } = this.state;
-    const { ghost, isGameOver, isGameWon, isPlaying} = this.state;
+    const { ghost, isGameOver, isGameWon, isPlaying, lastKeyMove} = this.state;
     if (isGameOver) return;
     if (!isGameWon && !isPlaying) return;
+    if (!lastKeyMove) return;
     switch(key) {
       case ARROW_LEFT_KEY:
         if ( pacman.column === 0 ) return;
         board[pacman.row][pacman.column] = '';
         pacman.column--;
-        if ( board[pacman.row][pacman.column] === 'bigdot' ){
-          ghost.isScared = true;
-          ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
-          board[ghost.row][ghost.column] = 'scared-ghost';
-        } 
-        board[pacman.row][pacman.column] = 'pacman-left';
+        previousSquare = board[pacman.row][pacman.column]; 
+        nextSquare = 'pacman-left';
         break;
       case ARROW_UP_KEY:
         if ( pacman.row === 0 ) return;
         board[pacman.row][pacman.column] = '';
         pacman.row--;
-        if ( board[pacman.row][pacman.column] === 'bigdot' ){
-          ghost.isScared = true;
-          ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
-          board[ghost.row][ghost.column] = 'scared-ghost';
-        }
-        board[pacman.row][pacman.column] = 'pacman-up';
+        previousSquare = board[pacman.row][pacman.column]; 
+        nextSquare = 'pacman-up';
         break;
       case ARROW_RIGHT_KEY:
         if ( pacman.column === COLUMNS-1 ) return;
         board[pacman.row][pacman.column] = '';
         pacman.column++;
-        if ( board[pacman.row][pacman.column] === 'bigdot' ){
-          ghost.isScared = true;
-          ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
-          board[ghost.row][ghost.column] = 'scared-ghost';
-        }
-        board[pacman.row][pacman.column] = 'pacman-right';
+        previousSquare = board[pacman.row][pacman.column]; 
+        nextSquare = 'pacman-right';
         break;
       case ARROW_DOWN_KEY:
         if ( pacman.row === ROWNS-1 ) return;
         board[pacman.row][pacman.column] = '';
         pacman.row++;
-        if ( board[pacman.row][pacman.column] === 'bigdot' ){
-          ghost.isScared = true;
-          ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
-          board[ghost.row][ghost.column] = 'scared-ghost';
-        }
-        board[pacman.row][pacman.column] = 'pacman-down';
+        previousSquare = board[pacman.row][pacman.column]; 
+        nextSquare = 'pacman-down';
         break;
       default:
         break;
     }
-    // Check if game if over
+    board[pacman.row][pacman.column] = nextSquare;
+    board = this.isGhostScared(board, previousSquare);
+    this.increasePoints(previousSquare);
     this.checkForGameOver(pacman, ghost);
     this.setState({ board, pacman });
+  }
+
+  isGhostScared(board, previousSquare){
+    let { ghost } = this.state;
+    if ( previousSquare === 'bigdot' ){
+      ghost.isScared = true;
+      ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
+      board[ghost.row][ghost.column] = 'scared-ghost';
+    }
+    this.setState({ ghost });
+    return board;
+  }
+
+  increasePoints(previousSquare) {
+    let { points, highestScore } = this.state;
+    const { ghost } = this.state;
+    if ( previousSquare === 'dot' ) {
+      if (ghost.isScared) {
+        points += 2 * DOT_POINTS; // double points when ghost is scared
+      } else {
+        points += DOT_POINTS;
+      }
+    } else if ( previousSquare === 'bigdot' ){
+      points += BIGDOT_POINTS;
+    }
+    if ( points >= highestScore ) {
+      highestScore = points;
+    }
+    this.setState({ points, highestScore });
   }
 
   checkForWin() {
@@ -403,15 +426,12 @@ class Game extends React.Component {
   }
 
   render (){
-    const { board, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
-    const config = {
-     preventDefaultTouchmoveEvent: true,
-     trackMouse: true
-    };
+    const { board, points, highestScore, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
     return (
       <div className="game" tabIndex="0" onKeyDown={this.onKeyDown}>
-          <Swipeable onSwiped={this.onSwiped} {...config}>
+          <Swipeable onSwiped={this.onSwiped} {...SWIPEABLE_CONFIG}>
             <Wrapper>
+              <p className="yellow-text">Points: {points} | Highest Score: {highestScore}</p>
               <Board 
                 board={board} 
                 isGameOver={isGameOver} 
