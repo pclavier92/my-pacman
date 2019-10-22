@@ -1,8 +1,7 @@
 .square {
   height: 40px;
   width: 40px;
-  display: inline-block;
-  background-color: #282c34;  
+  display: inline-block;  
   text-align: center;
   vertical-align: top;
 }

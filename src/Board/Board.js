@@ -3,34 +3,51 @@ import { WindowSizeContext } from '../context';
 import Square from '../Square';
 import './Board.css';
 
+const WIDTH_MARGIN = 0.1;
+const HEIGHT_MARGIN = 0.5;
+
 const computeSquareSize = (board, width, height) => {
   const rows = board.length;
   const columns = board[0].length;
-  const squareWidth = Math.ceil((width - width/10)/columns) ;
-  const squareHeight = Math.ceil((height - height/10)/rows);
+  const squareWidth = Math.ceil(width*(1 - WIDTH_MARGIN)/columns) ;
+  const squareHeight = Math.ceil(height*(1 - HEIGHT_MARGIN)/rows);
   return Math.min(squareWidth, squareHeight);
 };
 
 const Board = ({ board, isGameOver, isGameWon, isGamePaused }) => {
   return (
-    <div className="board">
-      <WindowSizeContext.Consumer> 
-      { 
-        ({width, height}) => {
-          const size = computeSquareSize(board, width, height);
-          return board.map( row => (
-            <div>
-              { row.map(t => <Square size={size} type={t} /> ) }
-            </div>
-          ));
+    <div className="board-background">   
+      <WindowSizeContext.Consumer>
+        { 
+          ({width, height}) => {
+            const size = computeSquareSize(board, width, height);
+            const pamanStyle = {
+              position: 'absolute',
+              left: size,
+              top: size
+            };
+            return (
+              <div>
+                <div className="board">   
+                {
+                  board.map( row => (
+                  <div>
+                    { row.map(t => <Square size={size} type={t} /> ) }
+                  </div>
+                  ))
+                }
+                <Square style={pamanStyle} size={size} type={'pacman-right'} />
+                </div>
+                <Modal 
+                  isGameOver={isGameOver} 
+                  isGameWon={isGameWon}
+                  isGamePaused={isGamePaused}
+                />
+              </div>
+            );
+          }
         }
-      }
       </WindowSizeContext.Consumer>
-      <Modal 
-        isGameOver={isGameOver} 
-        isGameWon={isGameWon}
-        isGamePaused={isGamePaused}
-      />
     </div>
   );
 };

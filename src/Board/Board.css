@@ -1,6 +1,12 @@
-.board {
+.board-background {
   background-color: #282c34;
   position: relative;
+  width: 100%;
+}
+
+.board {
+  position: relative;
+  display: inline-block;
   touch-action: none;
 }
 

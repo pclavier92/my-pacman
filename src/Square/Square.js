@@ -15,7 +15,7 @@ const scaredGhostSquare = <img src={scaredGhost} className="ghost" alt="" />;
 const dotSquare = <img src={dot} className="dot" alt="" />;
 const bigDotSquare = <img src={dot} className="bigdot" alt="" />;
 
-const Square = ({ size, type }) => {
+const Square = ({ style, size, type }) => {
   let squareContent = null;
   switch(type) {
     case "pacman-right":  
@@ -50,7 +50,7 @@ const Square = ({ size, type }) => {
   }
 
   return (
-    <div style={{ width: size, height: size }} className="square">
+    <div style={{ ...style, width: size, height: size }} className="square">
       { squareContent }
     </div>  
   );

@@ -5,6 +5,7 @@ import penha from '../media/ww-penha.mp3';
 import win from '../media/mario-win.mp3';
 import gameover from '../media/mario-gameover.mp3';
 import Board from '../Board';
+import Square from '../Square';
 import { getInitialBoard } from './initial-board';
 import './Game.css';
 
@@ -70,6 +71,7 @@ class Game extends React.Component {
       }
     };
     this.scroll = new Scroll();
+    this.pauseGame = this.pauseGame.bind(this);
     this.nextTurn = this.nextTurn.bind(this);
     this.onSwiped = this.onSwiped.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
@@ -428,7 +430,7 @@ class Game extends React.Component {
   render (){
     const { board, points, highestScore, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
     return (
-      <div className="game" tabIndex="0" onKeyDown={this.onKeyDown}>
+      <div className="game" tabIndex="0" onDoubleClick={this.pauseGame} onKeyDown={this.onKeyDown}>
           <Swipeable onSwiped={this.onSwiped} {...SWIPEABLE_CONFIG}>
             <Wrapper>
               <p className="yellow-text">Points: {points} | Highest Score: {highestScore}</p>
