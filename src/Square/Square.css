@@ -6,6 +6,10 @@
   vertical-align: top;
 }
 
+.absolute {
+  position: absolute;
+}
+
 .pacman {
   max-width: 100%;
   max-height: 100%;  

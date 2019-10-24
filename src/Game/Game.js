@@ -314,7 +314,7 @@ class Game extends React.Component {
   }
 
   movePacman(key) {
-    let previousSquare, nextSquare;
+    let nextSquare;
     let { board, pacman } = this.state;
     const { ghost, isGameOver, isGameWon, isPlaying, lastKeyMove} = this.state;
     if (isGameOver) return;
@@ -323,63 +323,62 @@ class Game extends React.Component {
     switch(key) {
       case ARROW_LEFT_KEY:
         if ( pacman.column === 0 ) return;
-        board[pacman.row][pacman.column] = '';
         pacman.column--;
-        previousSquare = board[pacman.row][pacman.column]; 
-        nextSquare = 'pacman-left';
+        pacman.lastMove = 'left';
+        nextSquare = board[pacman.row][pacman.column]; 
         break;
       case ARROW_UP_KEY:
         if ( pacman.row === 0 ) return;
-        board[pacman.row][pacman.column] = '';
         pacman.row--;
-        previousSquare = board[pacman.row][pacman.column]; 
-        nextSquare = 'pacman-up';
+        pacman.lastMove = 'up';
+        nextSquare = board[pacman.row][pacman.column]; 
         break;
       case ARROW_RIGHT_KEY:
         if ( pacman.column === COLUMNS-1 ) return;
-        board[pacman.row][pacman.column] = '';
         pacman.column++;
-        previousSquare = board[pacman.row][pacman.column]; 
-        nextSquare = 'pacman-right';
+        pacman.lastMove = 'right';
+        nextSquare = board[pacman.row][pacman.column]; 
         break;
       case ARROW_DOWN_KEY:
         if ( pacman.row === ROWNS-1 ) return;
-        board[pacman.row][pacman.column] = '';
         pacman.row++;
-        previousSquare = board[pacman.row][pacman.column]; 
-        nextSquare = 'pacman-down';
+        pacman.lastMove = 'down';
+        nextSquare = board[pacman.row][pacman.column]; 
         break;
       default:
         break;
     }
-    board[pacman.row][pacman.column] = nextSquare;
-    board = this.isGhostScared(board, previousSquare);
-    this.increasePoints(previousSquare);
+    this.isGhostScared(board, nextSquare);
+    this.increasePoints(nextSquare);
+    this.eatDot(board, pacman);
     this.checkForGameOver(pacman, ghost);
     this.setState({ board, pacman });
   }
 
-  isGhostScared(board, previousSquare){
+  eatDot(board, pacman) {
+    board[pacman.row][pacman.column] = '';
+  }
+
+  isGhostScared(board, nextSquare){
     let { ghost } = this.state;
-    if ( previousSquare === 'bigdot' ){
+    if ( nextSquare === 'bigdot' ){
       ghost.isScared = true;
       ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
       board[ghost.row][ghost.column] = 'scared-ghost';
     }
     this.setState({ ghost });
-    return board;
   }
 
-  increasePoints(previousSquare) {
+  increasePoints(nextSquare) {
     let { points, highestScore } = this.state;
     const { ghost } = this.state;
-    if ( previousSquare === 'dot' ) {
+    if ( nextSquare === 'dot' ) {
       if (ghost.isScared) {
         points += 2 * DOT_POINTS; // double points when ghost is scared
       } else {
         points += DOT_POINTS;
       }
-    } else if ( previousSquare === 'bigdot' ){
+    } else if ( nextSquare === 'bigdot' ){
       points += BIGDOT_POINTS;
     }
     if ( points >= highestScore ) {
@@ -428,7 +427,7 @@ class Game extends React.Component {
   }
 
   render (){
-    const { board, points, highestScore, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
+    const { board, pacman, points, highestScore, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
     return (
       <div className="game" tabIndex="0" onDoubleClick={this.pauseGame} onKeyDown={this.onKeyDown}>
           <Swipeable onSwiped={this.onSwiped} {...SWIPEABLE_CONFIG}>
@@ -436,6 +435,7 @@ class Game extends React.Component {
               <p className="yellow-text">Points: {points} | Highest Score: {highestScore}</p>
               <Board 
                 board={board} 
+                pacman={pacman}
                 isGameOver={isGameOver} 
                 isGameWon={isGameWon} 
                 isGamePaused={isGamePaused} 
