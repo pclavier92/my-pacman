@@ -5,7 +5,6 @@ import penha from '../media/ww-penha.mp3';
 import win from '../media/mario-win.mp3';
 import gameover from '../media/mario-gameover.mp3';
 import Board from '../Board';
-import Square from '../Square';
 import { getInitialBoard } from './initial-board';
 import './Game.css';
 
@@ -182,7 +181,6 @@ class Game extends React.Component {
     let { board, ghost } = this.state;
     const ammountMoves = posibleMoves.length;
     const nextMove = posibleMoves[Math.floor(Math.random() * ammountMoves)];
-    const { previousSquare } = ghost;
     switch(nextMove) {
       case MOVE_LEFT:
         if ( ghost.column === 0 ) {
@@ -191,18 +189,7 @@ class Game extends React.Component {
           this.moveGhost(posibleMoves);
           return;
         }
-        board[ghost.row][ghost.column] = previousSquare;
         ghost.column--;
-        ghost.previousSquare = board[ghost.row][ghost.column];
-        if (ghost.isScared) {
-          board[ghost.row][ghost.column] = 'scared-ghost';
-          ghost.scaredCounter--;
-          if( ghost.scaredCounter === 0 ){
-            ghost.isScared = false;
-          }
-        } else {
-          board[ghost.row][ghost.column] = 'ghost-left';
-        }
         break;
       case MOVE_UP:
         if ( ghost.row === 0 ) {
@@ -211,18 +198,7 @@ class Game extends React.Component {
           this.moveGhost(posibleMoves);
           return;
         }
-        board[ghost.row][ghost.column] = previousSquare;
         ghost.row--;
-        ghost.previousSquare = board[ghost.row][ghost.column];
-        if (ghost.isScared) {
-          board[ghost.row][ghost.column] = 'scared-ghost';
-          ghost.scaredCounter--;
-          if( ghost.scaredCounter === 0 ){
-            ghost.isScared = false;
-          }
-        } else {
-          board[ghost.row][ghost.column] = 'ghost-right';
-        }
         break;
       case MOVE_RIGHT:
         if ( ghost.column === COLUMNS-1 ) {
@@ -231,18 +207,7 @@ class Game extends React.Component {
           this.moveGhost(posibleMoves);
           return;
         }
-        board[ghost.row][ghost.column] = previousSquare;
         ghost.column++;
-        ghost.previousSquare = board[ghost.row][ghost.column];
-        if (ghost.isScared) {
-          board[ghost.row][ghost.column] = 'scared-ghost';
-          ghost.scaredCounter--;
-          if( ghost.scaredCounter === 0 ){
-            ghost.isScared = false;
-          }
-        } else {
-          board[ghost.row][ghost.column] = 'ghost-right';
-        }
         break;      
       case MOVE_DOWN:
         if ( ghost.row === ROWNS-1 ) {
@@ -251,25 +216,23 @@ class Game extends React.Component {
           this.moveGhost(posibleMoves);
           return;
         }
-        board[ghost.row][ghost.column] = previousSquare;
         ghost.row++;
-        ghost.previousSquare = board[ghost.row][ghost.column];
-        if (ghost.isScared) {
-          board[ghost.row][ghost.column] = 'scared-ghost';
-          ghost.scaredCounter--;
-          if( ghost.scaredCounter === 0 ){
-            ghost.isScared = false;
-          }
-        } else {
-          board[ghost.row][ghost.column] = 'ghost-left';
-        }
         break;
         default:
         break;
     }
-    // Check if game if over
+    this.reduceScaredCounter(ghost);  
     this.checkForGameOver(pacman, ghost);
     this.setState({ board, ghost });
+  }
+
+  reduceScaredCounter(ghost){
+    if (ghost.isScared) {
+      ghost.scaredCounter--;
+      if( ghost.scaredCounter === 0 ){
+        ghost.isScared = false;
+      }
+    }
   }
 
   onSwiped(event) {
@@ -364,7 +327,6 @@ class Game extends React.Component {
     if ( nextSquare === 'bigdot' ){
       ghost.isScared = true;
       ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
-      board[ghost.row][ghost.column] = 'scared-ghost';
     }
     this.setState({ ghost });
   }
@@ -392,11 +354,7 @@ class Game extends React.Component {
     let isGameWon = true;
     let isPlaying = true;
     board.forEach( row => {
-      if (row.includes('dot') || 
-        row.includes('bigdot') || 
-        ghost.previousSquare === 'dot' || 
-        ghost.previousSquare === 'bigdot' 
-      ) {
+      if (row.includes('dot') || row.includes('bigdot')) {
         isGameWon = false;
       }
     })
@@ -427,7 +385,7 @@ class Game extends React.Component {
   }
 
   render (){
-    const { board, pacman, points, highestScore, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
+    const { board, pacman, ghost, points, highestScore, isGameOver, isGameWon, isGamePaused, isPlaying } = this.state;
     return (
       <div className="game" tabIndex="0" onDoubleClick={this.pauseGame} onKeyDown={this.onKeyDown}>
           <Swipeable onSwiped={this.onSwiped} {...SWIPEABLE_CONFIG}>
@@ -436,6 +394,7 @@ class Game extends React.Component {
               <Board 
                 board={board} 
                 pacman={pacman}
+                ghost={ghost}
                 isGameOver={isGameOver} 
                 isGameWon={isGameWon} 
                 isGamePaused={isGamePaused} 

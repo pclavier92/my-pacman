@@ -2,6 +2,7 @@ import React from 'react';
 import { WindowSizeContext } from '../context';
 import Square from '../Square';
 import Pacman from '../Square/Pacman';
+import Ghost from '../Square/Ghost';
 import './Board.css';
 
 const WIDTH_MARGIN = 0.1;
@@ -15,7 +16,7 @@ const computeSquareSize = (board, width, height) => {
   return Math.min(squareWidth, squareHeight);
 };
 
-const Board = ({ board, pacman, isGameOver, isGameWon, isGamePaused }) => {
+const Board = ({ board, pacman, ghost, isGameOver, isGameWon, isGamePaused }) => {
   return (
     <div className="board-background">   
       <WindowSizeContext.Consumer>
@@ -33,6 +34,7 @@ const Board = ({ board, pacman, isGameOver, isGameWon, isGamePaused }) => {
                   ))
                 }
                 <Pacman pacman={pacman} size={size} />
+                <Ghost ghost={ghost} size={size} />
                 </div>
                 <Modal 
                   isGameOver={isGameOver} 
