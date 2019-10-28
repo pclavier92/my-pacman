@@ -11,7 +11,7 @@ import './Game.css';
 // Settings
 const ROWNS = 10;
 const COLUMNS = 25;
-const GHOST_SPEED = 250; // move every X ms
+const GAME_SPEED = 250; // move every X ms
 const SCARED_SECONDS = 3; // ghost is scared for 3 seconds
 const DOT_POINTS = 50;
 const BIGDOT_POINTS = 200;
@@ -103,7 +103,7 @@ class Game extends React.Component {
       }
     });
     clearInterval(this.interval);
-    this.interval = setInterval(this.nextTurn, GHOST_SPEED);
+    this.interval = setInterval(this.nextTurn, GAME_SPEED);
     debugger;
     this.scroll.disable();
     const { isPlaying } = this.state;
@@ -121,7 +121,7 @@ class Game extends React.Component {
       clearInterval(this.interval);
       this.scroll.enable();
     } else {
-      this.interval = setInterval(this.nextTurn, GHOST_SPEED);
+      this.interval = setInterval(this.nextTurn, GAME_SPEED);
       this.scroll.disable();
     }
     this.setState({ isGamePaused });
@@ -326,7 +326,7 @@ class Game extends React.Component {
     let { ghost } = this.state;
     if ( nextSquare === 'bigdot' ){
       ghost.isScared = true;
-      ghost.scaredCounter = SCARED_SECONDS * 1000 / GHOST_SPEED;
+      ghost.scaredCounter = SCARED_SECONDS * 1000 / GAME_SPEED;
     }
     this.setState({ ghost });
   }
