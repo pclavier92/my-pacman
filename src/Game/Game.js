@@ -190,6 +190,7 @@ class Game extends React.Component {
           return;
         }
         ghost.column--;
+        ghost.lastMove = 'left';
         break;
       case MOVE_UP:
         if ( ghost.row === 0 ) {
@@ -208,6 +209,7 @@ class Game extends React.Component {
           return;
         }
         ghost.column++;
+        ghost.lastMove = 'right';
         break;      
       case MOVE_DOWN:
         if ( ghost.row === ROWNS-1 ) {
@@ -350,7 +352,7 @@ class Game extends React.Component {
   }
 
   checkForWin() {
-    const { board, ghost } = this.state;
+    const { board, ghost, pacman } = this.state;
     let isGameWon = true;
     let isPlaying = true;
     board.forEach( row => {
@@ -359,14 +361,14 @@ class Game extends React.Component {
       }
     })
     if (isGameWon){
-      ghost.row = -1;
+      pacman.lastMove = null;
       isPlaying = false;
       clearInterval(this.interval);
       this.backgroundMusic.pause();
       this.winningSound.play();
       this.scroll.enable();
     }
-    this.setState({ isGameWon, isPlaying, ghost});
+    this.setState({ isGameWon, isPlaying, ghost, pacman});
     return isGameWon;
   }
 
@@ -374,6 +376,7 @@ class Game extends React.Component {
     if (ghost.isScared) return;
     let { isGameOver, isPlaying } = this.state;
     if (pacman.row === ghost.row && pacman.column === ghost.column) {
+      pacman.lastMove = null;
       isGameOver = true;
       isPlaying = false;
       clearInterval(this.interval);
@@ -381,7 +384,7 @@ class Game extends React.Component {
       this.gameoverSound.play();
       this.scroll.enable();
     }
-    this.setState({ isGameOver, isPlaying });
+    this.setState({ isGameOver, isPlaying, pacman });
   }
 
   render (){

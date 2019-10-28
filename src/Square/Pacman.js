@@ -7,7 +7,7 @@ const Pacman = ({ size, pacman }) => {
   const top = pacman.row * size;
   return (
     <div style={{ width: size, height: size, left, top }} className="square absolute">
-      <img src={pacmanImage} className={`pacman ${pacman.lastMove}`} alt="" />
+      <img src={pacmanImage} style={{animationPlayState: 'running'}} className={`pacman ${pacman.lastMove}`} alt="" />
     </div>  
   );
 }

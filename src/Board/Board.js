@@ -16,6 +16,10 @@ const computeSquareSize = (board, width, height) => {
   return Math.min(squareWidth, squareHeight);
 };
 
+const setMoveDistance = size => {
+  document.documentElement.style.setProperty('--dist', size);
+}
+
 const Board = ({ board, pacman, ghost, isGameOver, isGameWon, isGamePaused }) => {
   return (
     <div className="board-background">   
@@ -23,6 +27,7 @@ const Board = ({ board, pacman, ghost, isGameOver, isGameWon, isGamePaused }) =>
         { 
           ({width, height}) => {
             const size = computeSquareSize(board, width, height);
+            setMoveDistance(size);
             return (
               <div>
                 <div className="board">   

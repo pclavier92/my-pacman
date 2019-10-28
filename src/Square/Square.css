@@ -21,19 +21,44 @@
 }
 
 .right {
-  transform: rotate(0deg);
+  animation: move-right 250ms infinite 0ms linear;
+  animation-play-state: paused;
+}
+
+@keyframes move-right {
+  0% {transform: translateX(calc(var(--dist) * -1px / 2));}
+  100% {transform: translateX(calc(var(--dist) * 1px / 2));}
 }
 
 .down {
-  transform: rotate(90deg);
+  animation: move-down 250ms infinite 0ms linear;
+  animation-play-state: paused;
+}
+
+@keyframes move-down {
+  0% {transform: rotate(90deg) translateX(calc(var(--dist) * -1px / 2));}
+  100% {transform: rotate(90deg) translateX(calc(var(--dist) * 1px / 2));}
 }
 
 .left {
-  transform: scaleX(-1);
+  animation: move-left 250ms infinite 0ms linear;
+  animation-play-state: paused;
 }
 
+@keyframes move-left {
+  0% {transform: scaleX(-1) translateX(calc(var(--dist) * -1px / 2));}
+  100% {transform: scaleX(-1) translateX(calc(var(--dist) * 1px / 2));}
+}
+
+
 .up {
-  transform: rotate(-90deg);
+  animation: move-up 250ms infinite 0ms linear;
+  animation-play-state: paused;
+}
+
+@keyframes move-up {
+  0% {transform: rotate(-90deg) translateX(calc(var(--dist) * -1px / 2));}
+  100% {transform: rotate(-90deg) translateX(calc(var(--dist) * 1px / 2));}
 }
 
 .dot {
