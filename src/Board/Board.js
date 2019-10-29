@@ -33,8 +33,8 @@ const Board = ({ board, pacman, ghost, isGameOver, isGameWon, isGamePaused }) =>
                   </div>
                   ))
                 }
-                <Pacman pacman={pacman} size={size} />
-                <Ghost ghost={ghost} size={size} />
+                <Pacman {...pacman} size={size} />
+                <Ghost {...ghost} size={size} />
                 </div>
                 <Modal 
                   isGameOver={isGameOver} 

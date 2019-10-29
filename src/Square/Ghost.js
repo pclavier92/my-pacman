@@ -1,16 +1,18 @@
 import React from 'react';
-import ghostImage from './ghost.png';
-import scaredGhostImage from './scared-ghost.png';
+import { 
+  ghost as ghostImage, 
+  scaredGhost as scaredGhostImage
+} from '../media/images';
 import './Square.css';
 
-const Ghost = ({ size, ghost }) => {
-  const left = ghost.column * size;
-  const top = ghost.row * size;
+const Ghost = ({ size, lastMove, column, row, isScared }) => {
+  const left = column * size;
+  const top = row * size;
   let Ghost;
-  if (ghost.isScared) {
+  if (isScared) {
     Ghost = <img src={scaredGhostImage} className="ghost" alt="" />;
   } else {
-    Ghost = <img src={ghostImage} className={`ghost ${ghost.lastMove}`} alt="" />; 
+    Ghost = <img src={ghostImage} className={`ghost ${lastMove}`} alt="" />; 
   }
   return (
     <div style={{ width: size, height: size, left, top }} className="square absolute">

@@ -1,9 +1,11 @@
 import React from 'react';
 import { Swipeable } from 'react-swipeable';
 import { Scroll, Wrapper } from '../utils';
-import penha from '../media/ww-penha.mp3';
-import win from '../media/mario-win.mp3';
-import gameover from '../media/mario-gameover.mp3';
+import { 
+  backgroundMusic,
+  winningSound,
+  gameoverSound
+} from '../media/sounds'
 import Board from '../Board';
 import { getInitialBoard } from './initial-board';
 import './Game.css';
@@ -78,9 +80,9 @@ class Game extends React.Component {
   }
 
   componentDidMount() {
-    this.winningSound = new Audio(win);
-    this.gameoverSound = new Audio(gameover);
-    this.backgroundMusic = new Audio(penha);
+    this.backgroundMusic = new Audio(backgroundMusic);
+    this.winningSound = new Audio(winningSound);
+    this.gameoverSound = new Audio(gameoverSound);
     this.backgroundMusic.loop = true;  
   }
 
@@ -120,9 +122,11 @@ class Game extends React.Component {
     if (isGamePaused) {
       clearInterval(this.interval);
       this.scroll.enable();
+      this.backgroundMusic.pause();
     } else {
       this.interval = setInterval(this.nextTurn, GAME_SPEED);
       this.scroll.disable();
+      this.backgroundMusic.play();
     }
     this.setState({ isGamePaused });
   }
@@ -190,6 +194,7 @@ class Game extends React.Component {
           return;
         }
         ghost.column--;
+        ghost.lastMove = 'left';
         break;
       case MOVE_UP:
         if ( ghost.row === 0 ) {
@@ -208,6 +213,7 @@ class Game extends React.Component {
           return;
         }
         ghost.column++;
+        ghost.lastMove = 'right';
         break;      
       case MOVE_DOWN:
         if ( ghost.row === ROWNS-1 ) {

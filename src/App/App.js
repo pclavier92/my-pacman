@@ -1,7 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { WindowSizeContext } from '../context';
 import Game from '../Game';
-import heading from './heading.png';
 import './App.css';
 
 function useWindowSize() {
@@ -23,7 +22,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={heading} className="App-logo" alt="heading" />
+        <h1 className="App-header">My Pacman</h1>
       </header>
       <WindowSizeContext.Provider value={windowSize}>
         <Game />
