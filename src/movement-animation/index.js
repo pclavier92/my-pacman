@@ -1,1 +1,1 @@
-export * from './animation-movement-hooks';
+export * from './use-movement-animation';

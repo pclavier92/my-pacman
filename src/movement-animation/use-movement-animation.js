@@ -1,20 +1,30 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
+import { config, settings } from '../constants';
+
+const {
+  GAME_SPEED,
+  ANIMATION_STEPS
+} = settings;
 // FPS = 4 * ANIMATION_STEPS = 40 fps
 // The time between steps is calculated as GAME_SPEED / ANIMATION_STEPS
-const ANIMATION_STEPS = 10;
-const GAME_SPEED = 250;
 
-const MOVE_LEFT = 'Left';
-const MOVE_UP = 'Up';
-const MOVE_RIGHT = 'Right';
-const MOVE_DOWN = 'Down';
+const {
+  MOVE_LEFT,
+  MOVE_UP,
+  MOVE_RIGHT,
+  MOVE_DOWN
+} = config;
 
-// size -  the map is divided into a grid of squares of size {size}*{size} px
-// lastMove - indicates direction taken by player/IA
-// column/row - position on the map/grid
-// setLeft/setTop - sets the new position for the player/IA
-export const useAnimationInitialPosition = (size, lastMove, column, row, setLeft, setTop, setStep) => {
+/* 
+*   @size: the map is divided into a grid of squares of size {size}*{size} px
+*   @lastMove: indicates direction taken by player/IA
+*   @column/row: position on the map/grid
+*/
+export const useMovementAnimation = (size, lastMove, column, row) => { 
+  const [left, setLeft] = useState(0);
+  const [top, setTop] = useState(0);
+  const [step, setStep] = useState(0);
   useEffect(() => {
     switch(lastMove) {
       case MOVE_RIGHT:
@@ -40,14 +50,7 @@ export const useAnimationInitialPosition = (size, lastMove, column, row, setLeft
     }
     setStep(ANIMATION_STEPS);
   }, [size, lastMove, column, row]);
-}
 
-// size -  the map is divided into a grid of squares of size {size}*{size} px
-// lastMove - indicates direction taken by player/IA
-// step - step in the movement animation. ANIMATION_STEPS defines the ammount or renders per movement for the animation 
-// setStep - sets the step of the animation for that moment
-// setLeft/setTop - sets the new position for the player/IA
-export const useMovementAnimation = (size, lastMove, step, setStep, left, setLeft, top, setTop) => {
   useEffect(() => {
     const stepSize = size / ANIMATION_STEPS;
     while(step > 0) {
@@ -73,4 +76,5 @@ export const useMovementAnimation = (size, lastMove, step, setStep, left, setLef
       return () => clearTimeout(timer);
     }
   }, [left, top, step, lastMove]);
-}
+  return { left, top, step };
+};

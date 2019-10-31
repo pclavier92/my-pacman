@@ -1,12 +1,12 @@
 import React from 'react';
+import { settings } from '../constants';
 import { WindowSizeContext } from '../context';
 import Square from '../Square';
 import Pacman from '../Square/Pacman';
 import Ghost from '../Square/Ghost';
 import './Board.css';
 
-const WIDTH_MARGIN = 0.1;
-const HEIGHT_MARGIN = 0.5;
+const { WIDTH_MARGIN, HEIGHT_MARGIN } = settings;
 
 const computeSquareSize = (board, width, height) => {
   const rows = board.length;

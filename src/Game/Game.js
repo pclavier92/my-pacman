@@ -1,5 +1,6 @@
 import React from 'react';
 import { Swipeable } from 'react-swipeable';
+import { settings, config } from '../constants';
 import { Scroll, Wrapper } from '../utils';
 import { 
   backgroundMusic,
@@ -10,28 +11,27 @@ import Board from '../Board';
 import { getInitialBoard } from './initial-board';
 import './Game.css';
 
-// Settings
-const ROWNS = 10;
-const COLUMNS = 25;
-const GAME_SPEED = 250; // move every X ms
-const SCARED_SECONDS = 3; // ghost is scared for 3 seconds
-const DOT_POINTS = 50;
-const BIGDOT_POINTS = 200;
+const {
+  ROWNS,
+  COLUMNS,
+  GAME_SPEED,
+  SCARED_SECONDS,
+  DOT_POINTS,
+  BIGDOT_POINTS
+} = settings;
 
-// Config
-const MOVE_LEFT = 'Left';
-const MOVE_UP = 'Up';
-const MOVE_RIGHT = 'Right';
-const MOVE_DOWN = 'Down';
-const ARROW_LEFT_KEY = 'ArrowLeft';
-const ARROW_UP_KEY = 'ArrowUp';
-const ARROW_RIGHT_KEY = 'ArrowRight';
-const ARROW_DOWN_KEY = 'ArrowDown';
-const SPACE_KEY = ' ';
-const SWIPEABLE_CONFIG = {
-  preventDefaultTouchmoveEvent: true,
-  trackMouse: true
- };
+const {
+  MOVE_LEFT,
+  MOVE_UP,
+  MOVE_RIGHT,
+  MOVE_DOWN,
+  ARROW_LEFT_KEY,
+  ARROW_UP_KEY,
+  ARROW_RIGHT_KEY,
+  ARROW_DOWN_KEY,
+  SPACE_KEY,
+  SWIPEABLE_CONFIG
+} = config;
 
 const INITIAL_STATE = {
   board: getInitialBoard(),
