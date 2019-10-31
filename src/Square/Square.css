@@ -20,19 +20,19 @@
   max-height: 100%;  
 }
 
-.right {
+.Right {
   transform: rotate(0deg);
 }
 
-.down {
+.pacman.Down {
   transform: rotate(90deg);
 }
 
-.left {
+.Left {
   transform: scaleX(-1);
 }
 
-.up {
+.pacman.Up {
   transform: rotate(-90deg);
 }
 

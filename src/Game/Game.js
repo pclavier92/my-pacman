@@ -19,18 +19,14 @@ const DOT_POINTS = 50;
 const BIGDOT_POINTS = 200;
 
 // Config
-const MOVE_LEFT = 1;
-const MOVE_UP = 2;
-const MOVE_RIGHT = 3;
-const MOVE_DOWN = 4;
+const MOVE_LEFT = 'Left';
+const MOVE_UP = 'Up';
+const MOVE_RIGHT = 'Right';
+const MOVE_DOWN = 'Down';
 const ARROW_LEFT_KEY = 'ArrowLeft';
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_RIGHT_KEY = 'ArrowRight';
 const ARROW_DOWN_KEY = 'ArrowDown';
-const SWIPE_LEFT = 'Left';
-const SWIPE_UP = 'Up';
-const SWIPE_RIGHT = 'Right';
-const SWIPE_DOWN = 'Down';
 const SPACE_KEY = ' ';
 const SWIPEABLE_CONFIG = {
   preventDefaultTouchmoveEvent: true,
@@ -194,7 +190,7 @@ class Game extends React.Component {
           return;
         }
         ghost.column--;
-        ghost.lastMove = 'left';
+        ghost.lastMove = MOVE_LEFT;
         break;
       case MOVE_UP:
         if ( ghost.row === 0 ) {
@@ -204,6 +200,7 @@ class Game extends React.Component {
           return;
         }
         ghost.row--;
+        ghost.lastMove = MOVE_UP;
         break;
       case MOVE_RIGHT:
         if ( ghost.column === COLUMNS-1 ) {
@@ -213,7 +210,7 @@ class Game extends React.Component {
           return;
         }
         ghost.column++;
-        ghost.lastMove = 'right';
+        ghost.lastMove = MOVE_RIGHT;
         break;      
       case MOVE_DOWN:
         if ( ghost.row === ROWNS-1 ) {
@@ -223,6 +220,7 @@ class Game extends React.Component {
           return;
         }
         ghost.row++;
+        ghost.lastMove = MOVE_DOWN;
         break;
         default:
         break;
@@ -245,16 +243,16 @@ class Game extends React.Component {
     const { dir } = event;
     let { lastKeyMove } = this.state;
     switch(dir) {
-      case SWIPE_LEFT:
+      case MOVE_LEFT:
         lastKeyMove = ARROW_LEFT_KEY;
         break;
-      case SWIPE_UP:
+      case MOVE_UP:
         lastKeyMove = ARROW_UP_KEY;
         break;
-      case SWIPE_RIGHT:
+      case MOVE_RIGHT:
         lastKeyMove = ARROW_RIGHT_KEY;
         break;
-      case SWIPE_DOWN:
+      case MOVE_DOWN:
         lastKeyMove = ARROW_DOWN_KEY;
         break;
       default:
@@ -293,25 +291,25 @@ class Game extends React.Component {
       case ARROW_LEFT_KEY:
         if ( pacman.column === 0 ) return;
         pacman.column--;
-        pacman.lastMove = 'left';
+        pacman.lastMove = MOVE_LEFT;
         nextSquare = board[pacman.row][pacman.column]; 
         break;
       case ARROW_UP_KEY:
         if ( pacman.row === 0 ) return;
         pacman.row--;
-        pacman.lastMove = 'up';
+        pacman.lastMove = MOVE_UP;
         nextSquare = board[pacman.row][pacman.column]; 
         break;
       case ARROW_RIGHT_KEY:
         if ( pacman.column === COLUMNS-1 ) return;
         pacman.column++;
-        pacman.lastMove = 'right';
+        pacman.lastMove = MOVE_RIGHT;
         nextSquare = board[pacman.row][pacman.column]; 
         break;
       case ARROW_DOWN_KEY:
         if ( pacman.row === ROWNS-1 ) return;
         pacman.row++;
-        pacman.lastMove = 'down';
+        pacman.lastMove = MOVE_DOWN;
         nextSquare = board[pacman.row][pacman.column]; 
         break;
       default:
