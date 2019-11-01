@@ -289,26 +289,38 @@ class Game extends React.Component {
     if (!lastKeyMove) return;
     switch(key) {
       case ARROW_LEFT_KEY:
-        if ( pacman.column === 0 ) return;
-        pacman.column--;
+        if ( pacman.column === 0 ) {
+          pacman.column = COLUMNS-1;  
+        } else {
+          pacman.column--;
+        }
         pacman.lastMove = MOVE_LEFT;
         nextSquare = board[pacman.row][pacman.column]; 
         break;
       case ARROW_UP_KEY:
-        if ( pacman.row === 0 ) return;
-        pacman.row--;
+        if ( pacman.row === 0 ) {
+          pacman.row = ROWNS-1;  
+        } else {
+          pacman.row--;
+        }
         pacman.lastMove = MOVE_UP;
         nextSquare = board[pacman.row][pacman.column]; 
         break;
       case ARROW_RIGHT_KEY:
-        if ( pacman.column === COLUMNS-1 ) return;
-        pacman.column++;
+        if ( pacman.column === COLUMNS-1 ) {
+          pacman.column = 0;  
+        } else {
+          pacman.column++;
+        }
         pacman.lastMove = MOVE_RIGHT;
         nextSquare = board[pacman.row][pacman.column]; 
         break;
       case ARROW_DOWN_KEY:
-        if ( pacman.row === ROWNS-1 ) return;
-        pacman.row++;
+        if ( pacman.row === ROWNS-1 ) {
+          pacman.row = 0;  
+        } else {
+          pacman.row++;
+        }
         pacman.lastMove = MOVE_DOWN;
         nextSquare = board[pacman.row][pacman.column]; 
         break;
