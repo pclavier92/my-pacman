@@ -29,7 +29,7 @@ const Board = ({ board, pacman, ghost, isGameOver, isGameWon, isGamePaused }) =>
                 {
                   board.map( row => (
                   <div>
-                    { row.map(t => <Square size={size} type={t} /> ) }
+                    { row.map( ({type}) => <Square size={size} type={type} /> ) }
                   </div>
                   ))
                 }

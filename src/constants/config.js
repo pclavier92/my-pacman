@@ -7,6 +7,10 @@ const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_RIGHT_KEY = 'ArrowRight';
 const ARROW_DOWN_KEY = 'ArrowDown';
 const SPACE_KEY = ' ';
+const EMPTY = 'empty';
+const DOT = 'dot';
+const BIG_DOT = 'bigdot';
+const WALL = 'wall';
 const SWIPEABLE_CONFIG = Object.freeze({
   preventDefaultTouchmoveEvent: true,
   trackMouse: true
@@ -22,5 +26,9 @@ export default {
   ARROW_RIGHT_KEY,
   ARROW_DOWN_KEY,
   SPACE_KEY,
+  EMPTY,
+  DOT,
+  BIG_DOT,
+  WALL,
   SWIPEABLE_CONFIG
 }

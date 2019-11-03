@@ -30,6 +30,10 @@ const {
   ARROW_RIGHT_KEY,
   ARROW_DOWN_KEY,
   SPACE_KEY,
+  EMPTY,
+  DOT, 
+  BIG_DOT, 
+  WALL,
   SWIPEABLE_CONFIG
 } = config;
 
@@ -43,12 +47,12 @@ const INITIAL_STATE = {
   points: 0,
   highestScore: 0,
   pacman: {
-    row: 0,
-    column: 0
+    row: 1,
+    column: 1
   },
   ghost: {
-    row: ROWNS-1,
-    column: COLUMNS-1,
+    row: ROWNS-2,
+    column: COLUMNS-2,
     previousSquare: 'bigdot',
     isScared: false,
     scaredCounter: 0
@@ -161,16 +165,16 @@ class Game extends React.Component {
   setScaredGhostDirection() {
     let posibleMoves = [];
     const { pacman, ghost } = this.state;
-    if ( pacman.row >= ghost.row ) {
+    if ( pacman.row > ghost.row ) {
       posibleMoves.push(MOVE_UP);
     }
-    if ( pacman.row <= ghost.row ) {
+    if ( pacman.row < ghost.row ) {
       posibleMoves.push(MOVE_DOWN);
     }
-    if ( pacman.column >= ghost.column ) {
+    if ( pacman.column > ghost.column ) {
       posibleMoves.push(MOVE_LEFT);
     }
-    if ( pacman.column <= ghost.column ) {
+    if ( pacman.column < ghost.column ) {
       posibleMoves.push(MOVE_RIGHT);
     }
     return posibleMoves;
@@ -281,7 +285,6 @@ class Game extends React.Component {
   }
 
   movePacman(key) {
-    let nextSquare;
     let { board, pacman } = this.state;
     const { ghost, isGameOver, isGameWon, isPlaying, lastKeyMove} = this.state;
     if (isGameOver) return;
@@ -289,44 +292,45 @@ class Game extends React.Component {
     if (!lastKeyMove) return;
     switch(key) {
       case ARROW_LEFT_KEY:
+        if (this.isNotWalkable(board, pacman.row, pacman.column-1)) return;
         if ( pacman.column === 0 ) {
           pacman.column = COLUMNS-1;  
         } else {
           pacman.column--;
         }
-        pacman.lastMove = MOVE_LEFT;
-        nextSquare = board[pacman.row][pacman.column]; 
+        pacman.lastMove = MOVE_LEFT; 
         break;
       case ARROW_UP_KEY:
+        if (this.isNotWalkable(board, pacman.row-1, pacman.column)) return;
         if ( pacman.row === 0 ) {
           pacman.row = ROWNS-1;  
         } else {
           pacman.row--;
         }
-        pacman.lastMove = MOVE_UP;
-        nextSquare = board[pacman.row][pacman.column]; 
+        pacman.lastMove = MOVE_UP; 
         break;
       case ARROW_RIGHT_KEY:
+        if (this.isNotWalkable(board, pacman.row, pacman.column+1)) return;
         if ( pacman.column === COLUMNS-1 ) {
           pacman.column = 0;  
         } else {
           pacman.column++;
         }
         pacman.lastMove = MOVE_RIGHT;
-        nextSquare = board[pacman.row][pacman.column]; 
         break;
       case ARROW_DOWN_KEY:
+        if (this.isNotWalkable(board, pacman.row+1, pacman.column)) return;
         if ( pacman.row === ROWNS-1 ) {
           pacman.row = 0;  
         } else {
           pacman.row++;
         }
         pacman.lastMove = MOVE_DOWN;
-        nextSquare = board[pacman.row][pacman.column]; 
         break;
       default:
         break;
     }
+    const nextSquare = board[pacman.row][pacman.column];
     this.isGhostScared(board, nextSquare);
     this.increasePoints(nextSquare);
     this.eatDot(board, pacman);
@@ -334,13 +338,22 @@ class Game extends React.Component {
     this.setState({ board, pacman });
   }
 
+  isNotWalkable(board, nextRow, nextColumn) {
+    return board[nextRow] && 
+      board[nextRow][nextColumn] && 
+      !board[nextRow][nextColumn].isWalkable;
+  }
+
   eatDot(board, pacman) {
-    board[pacman.row][pacman.column] = '';
+    board[pacman.row][pacman.column] = {
+      isWalkable: true,
+      type: EMPTY
+    };
   }
 
   isGhostScared(board, nextSquare){
     let { ghost } = this.state;
-    if ( nextSquare === 'bigdot' ){
+    if ( nextSquare.type === BIG_DOT ){
       ghost.isScared = true;
       ghost.scaredCounter = SCARED_SECONDS * 1000 / GAME_SPEED;
     }
@@ -350,13 +363,13 @@ class Game extends React.Component {
   increasePoints(nextSquare) {
     let { points, highestScore } = this.state;
     const { ghost } = this.state;
-    if ( nextSquare === 'dot' ) {
+    if ( nextSquare.type === DOT ) {
       if (ghost.isScared) {
         points += 2 * DOT_POINTS; // double points when ghost is scared
       } else {
         points += DOT_POINTS;
       }
-    } else if ( nextSquare === 'bigdot' ){
+    } else if ( nextSquare.type === BIG_DOT ){
       points += BIGDOT_POINTS;
     }
     if ( points >= highestScore ) {
@@ -370,7 +383,8 @@ class Game extends React.Component {
     let isGameWon = true;
     let isPlaying = true;
     board.forEach( row => {
-      if (row.includes('dot') || row.includes('bigdot')) {
+      row = row.map( r => r.type);
+      if (row.includes(DOT) || row.includes(BIG_DOT)) {
         isGameWon = false;
       }
     })

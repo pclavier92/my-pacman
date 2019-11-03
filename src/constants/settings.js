@@ -1,4 +1,4 @@
-const ROWNS = 10;
+const ROWNS = 11;
 const COLUMNS = 25;
 const GAME_SPEED = 250; // move every X ms
 const SCARED_SECONDS = 3; // ghost is scared for 3 seconds

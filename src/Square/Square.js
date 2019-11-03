@@ -1,18 +1,25 @@
 import React from 'react';
 import { dot } from '../media/images';
+import { config } from '../constants';
 import './Square.css';
 
-const dotSquare = <img src={dot} className="dot" alt="" />;
-const bigDotSquare = <img src={dot} className="bigdot" alt="" />;
+const { DOT, BIG_DOT, WALL } = config;
+
+const dotSquare = <img src={dot} className={`${DOT}`} alt="" />;
+const bigDotSquare = <img src={dot} className={`${BIG_DOT}`} alt="" />;
+const wallSquare = <div className="wall"></div>
 
 const Square = ({ size, type }) => {
   let squareContent = null;
   switch(type) {
-    case "dot":
+    case DOT:
         squareContent = dotSquare;
       break;
-    case "bigdot":
+    case BIG_DOT:
         squareContent = bigDotSquare;
+      break;
+    case WALL:
+        squareContent = wallSquare;
       break;
     default:
       break;
