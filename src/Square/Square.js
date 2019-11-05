@@ -1,30 +1,40 @@
 import React from 'react';
-import { dot } from '../media/images';
+import { 
+  dot,
+  verticalWall,
+  horizontalWall,
+  topLeftCornerWall,
+  topRightCornerWall,
+  bottomRightCornerWall,
+  bottomLeftCornerWall
+} from '../media/images';
 import { config } from '../constants';
 import './Square.css';
 
-const { DOT, BIG_DOT, WALL } = config;
+const { 
+  DOT, 
+  BIG_DOT, 
+  VERTICAL_WALL,
+  HORIZONTAL_WALL,
+  TOP_LEFT_CORNER_WALL,
+  TOP_RIGHT_CORNER_WALL,
+  BOTTOM_RIGHT_CORNER_WALL,
+  BOTTOM_LEFT_CORNER_WALL
+} = config;
 
-const dotSquare = <img src={dot} className={`${DOT}`} alt="" />;
-const bigDotSquare = <img src={dot} className={`${BIG_DOT}`} alt="" />;
-const wallSquare = <div className="wall"></div>
+const imagesMap = {
+  [DOT]: <img src={dot} className={`${DOT}`} alt="" />,
+  [BIG_DOT]: <img src={dot} className={`${BIG_DOT}`} alt="" />,
+  [VERTICAL_WALL]: <img src={verticalWall} className="wall" alt="" />,
+  [HORIZONTAL_WALL]: <img src={horizontalWall} className="wall" alt="" />,
+  [TOP_LEFT_CORNER_WALL]: <img src={topLeftCornerWall} className="wall" alt="" />,
+  [TOP_RIGHT_CORNER_WALL]: <img src={topRightCornerWall} className="wall" alt="" />,
+  [BOTTOM_RIGHT_CORNER_WALL]: <img src={bottomRightCornerWall} className="wall" alt="" />,
+  [BOTTOM_LEFT_CORNER_WALL]: <img src={bottomLeftCornerWall} className="wall" alt="" />
+}
 
 const Square = ({ size, type }) => {
-  let squareContent = null;
-  switch(type) {
-    case DOT:
-        squareContent = dotSquare;
-      break;
-    case BIG_DOT:
-        squareContent = bigDotSquare;
-      break;
-    case WALL:
-        squareContent = wallSquare;
-      break;
-    default:
-      break;
-  }
-
+  const squareContent = imagesMap[type] || null;
   return (
     <div style={{ width: size, height: size }} className="square">
       { squareContent }

@@ -1,6 +1,16 @@
 import { config, settings } from '../constants';
 
-const { EMPTY, DOT, BIG_DOT, WALL } = config;
+const { 
+  EMPTY, 
+  DOT, 
+  BIG_DOT, 
+  VERTICAL_WALL, 
+  HORIZONTAL_WALL,
+  TOP_LEFT_CORNER_WALL,
+  TOP_RIGHT_CORNER_WALL,
+  BOTTOM_RIGHT_CORNER_WALL,
+  BOTTOM_LEFT_CORNER_WALL,
+} = config;
 const { COLUMNS, ROWS } = settings;
 
 const empty = Object.freeze({
@@ -15,9 +25,33 @@ const bigDot = Object.freeze({
   isWalkable: true,
   type: BIG_DOT
 });
-const wall = Object.freeze({
+const verticalWall = Object.freeze({
   isWalkable: false,
-  type: WALL
+  type: VERTICAL_WALL
+});
+const horizontalWall = Object.freeze({
+  isWalkable: false,
+  type: HORIZONTAL_WALL
+});
+
+const topLeftConrnerWall = Object.freeze({
+  isWalkable: false,
+  type: TOP_LEFT_CORNER_WALL
+});
+
+const topRightCornerWall = Object.freeze({
+  isWalkable: false,
+  type: TOP_RIGHT_CORNER_WALL
+});
+
+const bottomRightCornerWall = Object.freeze({
+  isWalkable: false,
+  type: BOTTOM_RIGHT_CORNER_WALL
+});
+
+const bottomLeftCornerWAll = Object.freeze({
+  isWalkable: false,
+  type: BOTTOM_LEFT_CORNER_WALL
 });
 
 const createDotFilledRow = () => new Array(COLUMNS).fill(dot);
@@ -43,16 +77,16 @@ const generateDynamicMap = () => {
 
 export const getInitialBoard = () => (
   [
-    [wall, wall, wall, wall, wall, wall, wall, wall, wall, wall, wall, wall, empty, wall, wall, wall, wall, wall, wall, wall, wall, wall, wall, wall, wall],
-    [wall, empty, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, bigDot, wall],
-    [wall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, wall],
-    [wall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, wall],
-    [wall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, wall],
-    [empty, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, empty],
-    [wall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, wall],
-    [wall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, wall],
-    [wall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, wall],
-    [wall, bigDot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, bigDot, wall],
-    [wall, wall, wall, wall, wall, wall, wall, wall, wall, wall, wall, wall, empty, wall, wall, wall, wall, wall, wall, wall, wall, wall, wall, wall, wall]
+    [topLeftConrnerWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, empty, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, topRightCornerWall],
+    [verticalWall, empty, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, bigDot, verticalWall],
+    [verticalWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, verticalWall],
+    [verticalWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, verticalWall],
+    [verticalWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, topLeftConrnerWall, dot, topRightCornerWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, verticalWall],
+    [empty, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, bigDot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, empty],
+    [verticalWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, bottomLeftCornerWAll, dot, bottomRightCornerWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, verticalWall],
+    [verticalWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, verticalWall],
+    [verticalWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, verticalWall],
+    [verticalWall, bigDot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, bigDot, verticalWall],
+    [bottomLeftCornerWAll, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, empty, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, bottomRightCornerWall]
   ]
 );

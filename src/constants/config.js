@@ -10,7 +10,12 @@ const SPACE_KEY = ' ';
 const EMPTY = 'empty';
 const DOT = 'dot';
 const BIG_DOT = 'bigdot';
-const WALL = 'wall';
+const HORIZONTAL_WALL = 'horizontal-wall';
+const VERTICAL_WALL = 'vertical-wall';
+const TOP_LEFT_CORNER_WALL = 'top-left-corner-wall';
+const TOP_RIGHT_CORNER_WALL = 'top-right-corner-wall';
+const BOTTOM_RIGHT_CORNER_WALL = 'bottom-right-corner-wall';
+const BOTTOM_LEFT_CORNER_WALL = 'bottom-left-corner-wall';
 const SWIPEABLE_CONFIG = Object.freeze({
   preventDefaultTouchmoveEvent: true,
   trackMouse: true
@@ -29,6 +34,11 @@ export default {
   EMPTY,
   DOT,
   BIG_DOT,
-  WALL,
+  HORIZONTAL_WALL,
+  VERTICAL_WALL,
+  TOP_LEFT_CORNER_WALL,
+  TOP_RIGHT_CORNER_WALL,
+  BOTTOM_RIGHT_CORNER_WALL,
+  BOTTOM_LEFT_CORNER_WALL,
   SWIPEABLE_CONFIG
 }
