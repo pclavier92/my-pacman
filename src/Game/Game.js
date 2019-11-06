@@ -185,9 +185,11 @@ class Game extends React.Component {
     const nextMove = posibleMoves[Math.floor(Math.random() * ammountMoves)];
     switch(nextMove) {
       case MOVE_LEFT:
-        if ( ghost.column === 0 ) {
+        if ( this.isNotWalkable(board, ghost.row, ghost.column-1) ) {
           posibleMoves.splice(nextMove,1);
+          posibleMoves.push(MOVE_UP);
           posibleMoves.push(MOVE_RIGHT);
+          posibleMoves.push(MOVE_DOWN);
           this.moveGhost(posibleMoves);
           return;
         }
@@ -195,8 +197,10 @@ class Game extends React.Component {
         ghost.lastMove = MOVE_LEFT;
         break;
       case MOVE_UP:
-        if ( ghost.row === 0 ) {
+        if ( this.isNotWalkable(board, ghost.row-1, ghost.column) ) {
           posibleMoves.splice(nextMove,1);
+          posibleMoves.push(MOVE_LEFT);
+          posibleMoves.push(MOVE_RIGHT);
           posibleMoves.push(MOVE_DOWN);
           this.moveGhost(posibleMoves);
           return;
@@ -205,9 +209,11 @@ class Game extends React.Component {
         ghost.lastMove = MOVE_UP;
         break;
       case MOVE_RIGHT:
-        if ( ghost.column === COLUMNS-1 ) {
+        if ( this.isNotWalkable(board, ghost.row, ghost.column+1) ) {
           posibleMoves.splice(nextMove,1);
           posibleMoves.push(MOVE_LEFT);
+          posibleMoves.push(MOVE_UP);
+          posibleMoves.push(MOVE_DOWN);
           this.moveGhost(posibleMoves);
           return;
         }
@@ -215,9 +221,11 @@ class Game extends React.Component {
         ghost.lastMove = MOVE_RIGHT;
         break;      
       case MOVE_DOWN:
-        if ( ghost.row === ROWNS-1 ) {
+        if ( this.isNotWalkable(board, ghost.row+1, ghost.column) ) {
           posibleMoves.splice(nextMove,1);
+          posibleMoves.push(MOVE_LEFT);
           posibleMoves.push(MOVE_UP);
+          posibleMoves.push(MOVE_RIGHT);
           this.moveGhost(posibleMoves);
           return;
         }
