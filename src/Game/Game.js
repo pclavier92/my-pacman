@@ -32,8 +32,7 @@ const {
   SPACE_KEY,
   EMPTY,
   DOT, 
-  BIG_DOT, 
-  WALL,
+  BIG_DOT,
   SWIPEABLE_CONFIG
 } = config;
 
@@ -47,13 +46,12 @@ const INITIAL_STATE = {
   points: 0,
   highestScore: 0,
   pacman: {
-    row: 1,
-    column: 1
+    row: 5,
+    column: 0
   },
   ghost: {
-    row: ROWNS-2,
-    column: COLUMNS-2,
-    previousSquare: 'bigdot',
+    row: 5,
+    column: COLUMNS-1,
     isScared: false,
     scaredCounter: 0
   }

@@ -68,7 +68,7 @@ const createLastRow = () => {
   return row;
 };
 
-const generateDynamicMap = () => {
+export const generateDynamicMap = () => {
   const map = new Array(ROWS-2).fill(createDotFilledRow());
   map.unshift(createFirstRow());
   map.unshift(createLastRow());
@@ -78,7 +78,7 @@ const generateDynamicMap = () => {
 export const getInitialBoard = () => (
   [
     [topLeftConrnerWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, empty, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, horizontalWall, topRightCornerWall],
-    [verticalWall, empty, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, bigDot, verticalWall],
+    [verticalWall, bigDot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, bigDot, verticalWall],
     [verticalWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, verticalWall],
     [verticalWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, verticalWall],
     [verticalWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, topLeftConrnerWall, dot, topRightCornerWall, dot, dot, dot, dot, dot, dot, dot, dot, dot, dot, verticalWall],
