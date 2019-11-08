@@ -185,7 +185,7 @@ class Game extends React.Component {
     const nextMove = posibleMoves[Math.floor(Math.random() * ammountMoves)];
     switch(nextMove) {
       case MOVE_LEFT:
-        if ( this.isNotWalkable(board, ghost.row, ghost.column-1) ) {
+        if ( !this.isWalkable(board, ghost.row, ghost.column-1) || ghost.column-1 < 0 ) {
           posibleMoves.splice(nextMove,1);
           posibleMoves.push(MOVE_UP);
           posibleMoves.push(MOVE_RIGHT);
@@ -197,7 +197,7 @@ class Game extends React.Component {
         ghost.lastMove = MOVE_LEFT;
         break;
       case MOVE_UP:
-        if ( this.isNotWalkable(board, ghost.row-1, ghost.column) ) {
+        if ( !this.isWalkable(board, ghost.row-1, ghost.column) || ghost.row-1 < 0 ) {
           posibleMoves.splice(nextMove,1);
           posibleMoves.push(MOVE_LEFT);
           posibleMoves.push(MOVE_RIGHT);
@@ -209,7 +209,7 @@ class Game extends React.Component {
         ghost.lastMove = MOVE_UP;
         break;
       case MOVE_RIGHT:
-        if ( this.isNotWalkable(board, ghost.row, ghost.column+1) ) {
+        if ( !this.isWalkable(board, ghost.row, ghost.column+1) || ghost.column+1 > COLUMNS-1 ) {
           posibleMoves.splice(nextMove,1);
           posibleMoves.push(MOVE_LEFT);
           posibleMoves.push(MOVE_UP);
@@ -221,7 +221,7 @@ class Game extends React.Component {
         ghost.lastMove = MOVE_RIGHT;
         break;      
       case MOVE_DOWN:
-        if ( this.isNotWalkable(board, ghost.row+1, ghost.column) ) {
+        if ( !this.isWalkable(board, ghost.row+1, ghost.column) || ghost.row+1 > ROWNS-1 ) {
           posibleMoves.splice(nextMove,1);
           posibleMoves.push(MOVE_LEFT);
           posibleMoves.push(MOVE_UP);
@@ -252,18 +252,19 @@ class Game extends React.Component {
   onSwiped(event) {
     const { dir } = event;
     let { lastKeyMove } = this.state;
+    const { pacman, board } = this.state;
     switch(dir) {
       case MOVE_LEFT:
-        lastKeyMove = ARROW_LEFT_KEY;
+        if(this.isWalkable(board, pacman.row, pacman.column-1)) lastKeyMove = ARROW_LEFT_KEY;
         break;
       case MOVE_UP:
-        lastKeyMove = ARROW_UP_KEY;
+        if(this.isWalkable(board, pacman.row-1, pacman.column)) lastKeyMove = ARROW_UP_KEY;
         break;
       case MOVE_RIGHT:
-        lastKeyMove = ARROW_RIGHT_KEY;
+        if(this.isWalkable(board, pacman.row, pacman.column+1)) lastKeyMove = ARROW_RIGHT_KEY;
         break;
       case MOVE_DOWN:
-        lastKeyMove = ARROW_DOWN_KEY;
+        if(this.isWalkable(board, pacman.row+1, pacman.column)) lastKeyMove = ARROW_DOWN_KEY;
         break;
       default:
         break;
@@ -274,12 +275,19 @@ class Game extends React.Component {
   onKeyDown(event){
     const { key } = event;
     let { lastKeyMove } = this.state;
+    const { pacman, board } = this.state;
     switch(key) {
       case ARROW_LEFT_KEY:
+        if(this.isWalkable(board, pacman.row, pacman.column-1)) lastKeyMove = key;
+        break;
       case ARROW_UP_KEY:
+        if(this.isWalkable(board, pacman.row-1, pacman.column)) lastKeyMove = key;
+        break;
       case ARROW_RIGHT_KEY:
+        if(this.isWalkable(board, pacman.row, pacman.column+1)) lastKeyMove = key;
+        break;
       case ARROW_DOWN_KEY:
-        lastKeyMove = key;
+        if(this.isWalkable(board, pacman.row+1, pacman.column)) lastKeyMove = key;
         break;
       case SPACE_KEY:
         this.pauseGame();
@@ -291,6 +299,7 @@ class Game extends React.Component {
   }
 
   movePacman(key) {
+    debugger;
     let { board, pacman } = this.state;
     const { ghost, isGameOver, isGameWon, isPlaying, lastKeyMove} = this.state;
     if (isGameOver) return;
@@ -298,36 +307,41 @@ class Game extends React.Component {
     if (!lastKeyMove) return;
     switch(key) {
       case ARROW_LEFT_KEY:
-        if (this.isNotWalkable(board, pacman.row, pacman.column-1)) return;
         if ( pacman.column === 0 ) {
           pacman.column = COLUMNS-1;  
-        } else {
+        } else if (!this.isWalkable(board, pacman.row, pacman.column-1)){
+          return;
+        }
+        else {
           pacman.column--;
         }
         pacman.lastMove = MOVE_LEFT; 
         break;
       case ARROW_UP_KEY:
-        if (this.isNotWalkable(board, pacman.row-1, pacman.column)) return;
         if ( pacman.row === 0 ) {
           pacman.row = ROWNS-1;  
+        } else if (!this.isWalkable(board, pacman.row-1, pacman.column)) {
+          return;
         } else {
           pacman.row--;
         }
         pacman.lastMove = MOVE_UP; 
         break;
       case ARROW_RIGHT_KEY:
-        if (this.isNotWalkable(board, pacman.row, pacman.column+1)) return;
         if ( pacman.column === COLUMNS-1 ) {
           pacman.column = 0;  
+        } else if (!this.isWalkable(board, pacman.row, pacman.column+1)) {
+          return;
         } else {
           pacman.column++;
         }
         pacman.lastMove = MOVE_RIGHT;
         break;
       case ARROW_DOWN_KEY:
-        if (this.isNotWalkable(board, pacman.row+1, pacman.column)) return;
         if ( pacman.row === ROWNS-1 ) {
           pacman.row = 0;  
+        } else if (!this.isWalkable(board, pacman.row+1, pacman.column)) {
+          return;
         } else {
           pacman.row++;
         }
@@ -344,10 +358,10 @@ class Game extends React.Component {
     this.setState({ board, pacman });
   }
 
-  isNotWalkable(board, nextRow, nextColumn) {
+  isWalkable(board, nextRow, nextColumn) {
     return board[nextRow] && 
       board[nextRow][nextColumn] && 
-      !board[nextRow][nextColumn].isWalkable;
+      board[nextRow][nextColumn].isWalkable;
   }
 
   eatDot(board, pacman) {
