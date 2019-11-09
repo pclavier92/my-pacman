@@ -47,13 +47,14 @@ const INITIAL_STATE = {
   highestScore: 0,
   pacman: {
     row: 5,
-    column: 0
+    column: 0,
+    isMovingTowardsWall: false
   },
   ghost: {
     row: 5,
     column: COLUMNS-1,
     isScared: false,
-    scaredCounter: 0
+    scaredCounter: 0,
   }
 };
 
@@ -314,6 +315,11 @@ class Game extends React.Component {
         }
         else {
           pacman.column--;
+          if ( this.isWalkable(board, pacman.row, pacman.column-1) ){
+            pacman.isMovingTowardsWall = false;
+          } else {
+            pacman.isMovingTowardsWall = true;
+          }
         }
         pacman.lastMove = MOVE_LEFT; 
         break;
@@ -324,6 +330,11 @@ class Game extends React.Component {
           return;
         } else {
           pacman.row--;
+          if ( this.isWalkable(board, pacman.row-1, pacman.column) ){
+            pacman.isMovingTowardsWall = false;
+          } else {
+            pacman.isMovingTowardsWall = true;
+          }
         }
         pacman.lastMove = MOVE_UP; 
         break;
@@ -334,6 +345,11 @@ class Game extends React.Component {
           return;
         } else {
           pacman.column++;
+          if ( this.isWalkable(board, pacman.row, pacman.column+1) ){
+            pacman.isMovingTowardsWall = false;
+          } else {
+            pacman.isMovingTowardsWall = true;
+          }
         }
         pacman.lastMove = MOVE_RIGHT;
         break;
@@ -344,6 +360,11 @@ class Game extends React.Component {
           return;
         } else {
           pacman.row++;
+          if ( this.isWalkable(board, pacman.row+1, pacman.column) ){
+            pacman.isMovingTowardsWall = false;
+          } else {
+            pacman.isMovingTowardsWall = true;
+          }
         }
         pacman.lastMove = MOVE_DOWN;
         break;

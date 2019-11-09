@@ -21,7 +21,7 @@ const {
 *   @lastMove: indicates direction taken by player/IA
 *   @column/row: position on the map/grid
 */
-export const useMovementAnimation = (size, lastMove, column, row) => { 
+export const useMovementAnimation = (size, lastMove, column, row, halfLenght = false) => { 
   const [left, setLeft] = useState(0);
   const [top, setTop] = useState(0);
   const [step, setStep] = useState(0);
@@ -52,7 +52,8 @@ export const useMovementAnimation = (size, lastMove, column, row) => {
   }, [size, lastMove, column, row]);
 
   useEffect(() => {
-    const stepSize = size / ANIMATION_STEPS;
+    let stepSize = size / ANIMATION_STEPS;
+    stepSize = halfLenght ? stepSize/2 : stepSize;
     while(step > 0) {
       const timer = setTimeout(() => {
         switch(lastMove){
