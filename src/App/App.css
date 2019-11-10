@@ -25,6 +25,13 @@
   color: #09d3ac;
 }
 
+.volume-icon{
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 20px;
+}
+
 footer {
   flex: none;
   background-color: #282c34;

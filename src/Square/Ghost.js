@@ -6,8 +6,8 @@ import {
 } from '../media/images';
 import './Square.css';
 
-const Ghost = ({ size, lastMove, column, row, isScared }) => {
-  const { left, top } = useMovementAnimation(size, lastMove, column, row);
+const Ghost = ({ size, lastMove, column, row, isScared, isMovingTowardsWall }) => {
+  const { left, top } = useMovementAnimation(size, lastMove, column, row, isMovingTowardsWall);
 
   let Ghost;
   if (isScared) {

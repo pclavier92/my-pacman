@@ -48,12 +48,11 @@ export const useMovementAnimation = (size, lastMove, column, row, halfLenght = f
         setLeft(column * size);
         break;
     }
-    setStep(ANIMATION_STEPS);
-  }, [size, lastMove, column, row]);
+    setStep(halfLenght ? ANIMATION_STEPS/2 : ANIMATION_STEPS);
+  }, [size, lastMove, column, row, halfLenght]);
 
   useEffect(() => {
-    let stepSize = size / ANIMATION_STEPS;
-    stepSize = halfLenght ? stepSize/2 : stepSize;
+    const stepSize = size / ANIMATION_STEPS;
     while(step > 0) {
       const timer = setTimeout(() => {
         switch(lastMove){

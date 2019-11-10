@@ -1,12 +1,16 @@
 import React, { useLayoutEffect, useState } from 'react';
+
+import VolumeOffRoundedIcon from '@material-ui/icons/VolumeOffRounded';
+import VolumeUpRoundedIcon from '@material-ui/icons/VolumeUpRounded';
+
 import { WindowSizeContext } from '../context';
 import Game from '../Game';
 import './App.css';
 
-function useWindowSize() {
+const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
-    function updateSize() {
+    const updateSize = () => {
       setSize([window.innerWidth, window.innerHeight]);
     }
     window.addEventListener('resize', updateSize);
@@ -16,16 +20,26 @@ function useWindowSize() {
   return size;
 }
 
-function App() {
+const VolumeWrapper = ({ children, mute, setMute}) => (
+  <div className="volume-icon" onClick={() => setMute(!mute)}>
+    { children }
+  </div>
+);
+
+const App = () => {
   const [width, height] = useWindowSize();
+  const [mute, setMute] = useState(false);
   const windowSize = { width, height };
   return (
     <div className="App">
       <header className="App-header">
         <h1 className="App-header">My Pacman</h1>
+        <VolumeWrapper mute={mute} setMute={setMute}>
+          { mute ? <VolumeOffRoundedIcon fontSize="small" /> : <VolumeUpRoundedIcon fontSize="small" /> }
+        </VolumeWrapper>
       </header>
       <WindowSizeContext.Provider value={windowSize}>
-        <Game />
+        <Game isMuted={mute} />
       </WindowSizeContext.Provider>
     </div>
   );

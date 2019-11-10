@@ -55,6 +55,7 @@ const INITIAL_STATE = {
     column: COLUMNS-1,
     isScared: false,
     scaredCounter: 0,
+    isMovingTowardsWall: false
   }
 };
 
@@ -82,7 +83,21 @@ class Game extends React.Component {
     this.backgroundMusic = new Audio(backgroundMusic);
     this.winningSound = new Audio(winningSound);
     this.gameoverSound = new Audio(gameoverSound);
-    this.backgroundMusic.loop = true;  
+    this.backgroundMusic.loop = true;
+
+    const { isMuted } = this.props;
+    this.backgroundMusic.muted = isMuted;
+    this.winningSound.muted = isMuted;
+    this.gameoverSound.muted = isMuted;
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.isMuted !== prevProps.isMuted) {
+      const { isMuted } = this.props;
+      this.backgroundMusic.muted = isMuted;
+      this.winningSound.muted = isMuted;
+      this.gameoverSound.muted = isMuted;
+    }
   }
 
   componentWillUnmount() {
@@ -196,6 +211,11 @@ class Game extends React.Component {
         }
         ghost.column--;
         ghost.lastMove = MOVE_LEFT;
+        if ( this.isWalkable(board, ghost.row, ghost.column-1) ){
+          ghost.isMovingTowardsWall = false;
+        } else {
+          ghost.isMovingTowardsWall = true;
+        }
         break;
       case MOVE_UP:
         if ( !this.isWalkable(board, ghost.row-1, ghost.column) || ghost.row-1 < 0 ) {
@@ -208,6 +228,11 @@ class Game extends React.Component {
         }
         ghost.row--;
         ghost.lastMove = MOVE_UP;
+        if ( this.isWalkable(board, ghost.row-1, ghost.column) ){
+          ghost.isMovingTowardsWall = false;
+        } else {
+          ghost.isMovingTowardsWall = true;
+        }
         break;
       case MOVE_RIGHT:
         if ( !this.isWalkable(board, ghost.row, ghost.column+1) || ghost.column+1 > COLUMNS-1 ) {
@@ -220,6 +245,11 @@ class Game extends React.Component {
         }
         ghost.column++;
         ghost.lastMove = MOVE_RIGHT;
+        if ( this.isWalkable(board, ghost.row, ghost.column+1) ){
+          ghost.isMovingTowardsWall = false;
+        } else {
+          ghost.isMovingTowardsWall = true;
+        }
         break;      
       case MOVE_DOWN:
         if ( !this.isWalkable(board, ghost.row+1, ghost.column) || ghost.row+1 > ROWNS-1 ) {
@@ -232,6 +262,11 @@ class Game extends React.Component {
         }
         ghost.row++;
         ghost.lastMove = MOVE_DOWN;
+        if ( this.isWalkable(board, ghost.row+1, ghost.column) ){
+          ghost.isMovingTowardsWall = false;
+        } else {
+          ghost.isMovingTowardsWall = true;
+        }
         break;
         default:
         break;
@@ -434,6 +469,7 @@ class Game extends React.Component {
       isPlaying = false;
       clearInterval(this.interval);
       this.backgroundMusic.pause();
+      this.backgroundMusic.currentTime = 0;
       this.winningSound.play();
       this.scroll.enable();
     }
@@ -449,6 +485,7 @@ class Game extends React.Component {
       isPlaying = false;
       clearInterval(this.interval);
       this.backgroundMusic.pause();
+      this.backgroundMusic.currentTime = 0;
       this.gameoverSound.play();
       this.scroll.enable();
     }
