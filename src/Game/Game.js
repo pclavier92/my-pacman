@@ -441,7 +441,7 @@ class Game extends React.Component {
     const { ghost } = this.state;
     if ( nextSquare.type === DOT ) {
       if (ghost.isScared) {
-        points += 2 * DOT_POINTS; // double points when ghost is scared
+        points += 5 * DOT_POINTS; // quintuple points when ghost is scared
       } else {
         points += DOT_POINTS;
       }
@@ -466,6 +466,7 @@ class Game extends React.Component {
     })
     if (isGameWon){
       ghost.row = -1;
+      ghost.column = 1;
       isPlaying = false;
       clearInterval(this.interval);
       this.backgroundMusic.pause();
