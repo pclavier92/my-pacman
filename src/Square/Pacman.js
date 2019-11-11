@@ -6,8 +6,8 @@ import './Square.css';
 
 const { ANIMATION_STEPS } = settings;
 
-const Pacman = ({ size, lastMove, column, row, isMovingTowardsWall }) => {
-  const { left, top, step } = useMovementAnimation(size, lastMove, column, row, isMovingTowardsWall);
+const Pacman = ({ size, lastMove, column, row, isMovingTowardsWall : halfLenght }) => {
+  const { left, top, step } = useMovementAnimation(size, lastMove, column, row, halfLenght);
   
   let Pacman;
   if ( Math.abs(ANIMATION_STEPS - step) < ANIMATION_STEPS/2 ) {

@@ -120,7 +120,6 @@ class Game extends React.Component {
     });
     clearInterval(this.interval);
     this.interval = setInterval(this.nextTurn, GAME_SPEED);
-    debugger;
     this.scroll.disable();
     const { isPlaying } = this.state;
     if (!isPlaying) {
@@ -154,8 +153,9 @@ class Game extends React.Component {
     } else {
       posibleGhostMoves = this.setGhostDirection();
     }
-    this.moveGhost(posibleGhostMoves);
     this.movePacman(lastKeyMove);
+    this.moveGhost(posibleGhostMoves);
+    this.reduceScaredCounter(ghost);
   }
 
   setGhostDirection() {
@@ -197,6 +197,7 @@ class Game extends React.Component {
   moveGhost(posibleMoves) {
     const { pacman } = this.state;
     let { board, ghost } = this.state;
+    if (ghost.isScared && ghost.scaredCounter % 2 === 0 ) return;
     const ammountMoves = posibleMoves.length;
     const nextMove = posibleMoves[Math.floor(Math.random() * ammountMoves)];
     switch(nextMove) {
@@ -270,8 +271,7 @@ class Game extends React.Component {
         break;
         default:
         break;
-    }
-    this.reduceScaredCounter(ghost);  
+    } 
     this.checkForGameOver(pacman, ghost);
     this.setState({ board, ghost });
   }
@@ -282,6 +282,7 @@ class Game extends React.Component {
       if( ghost.scaredCounter === 0 ){
         ghost.isScared = false;
       }
+      this.setState({ ghost });
     }
   }
 
@@ -335,7 +336,6 @@ class Game extends React.Component {
   }
 
   movePacman(key) {
-    debugger;
     let { board, pacman } = this.state;
     const { ghost, isGameOver, isGameWon, isPlaying, lastKeyMove} = this.state;
     if (isGameOver) return;
@@ -407,7 +407,7 @@ class Game extends React.Component {
         break;
     }
     const nextSquare = board[pacman.row][pacman.column];
-    this.isGhostScared(board, nextSquare);
+    this.isGhostScared(nextSquare);
     this.increasePoints(nextSquare);
     this.eatDot(board, pacman);
     this.checkForGameOver(pacman, ghost);
@@ -427,7 +427,7 @@ class Game extends React.Component {
     };
   }
 
-  isGhostScared(board, nextSquare){
+  isGhostScared(nextSquare){
     let { ghost } = this.state;
     if ( nextSquare.type === BIG_DOT ){
       ghost.isScared = true;
