@@ -1,4 +1,4 @@
-const ROWNS = 11;
+const ROWS = 11;
 const COLUMNS = 25;
 const GAME_SPEED = 250; // move every X ms
 const SCARED_SECONDS = 3; // ghost is scared for 3 seconds
@@ -9,7 +9,7 @@ const WIDTH_MARGIN = 0.1;
 const HEIGHT_MARGIN = 0.5;
 
 export default {
-  ROWNS,
+  ROWS,
   COLUMNS,
   GAME_SPEED,
   SCARED_SECONDS,

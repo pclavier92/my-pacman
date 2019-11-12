@@ -12,7 +12,7 @@ import { getInitialBoard } from './initial-board';
 import './Game.css';
 
 const {
-  ROWNS,
+  ROWS,
   COLUMNS,
   GAME_SPEED,
   SCARED_SECONDS,
@@ -146,16 +146,22 @@ class Game extends React.Component {
 
   nextTurn() {
     if (this.checkForWin()) return;
-    const { ghost, lastKeyMove } = this.state;
-    let posibleGhostMoves;
-    if (ghost.isScared) {
-      posibleGhostMoves = this.setScaredGhostDirection();
-    } else {
-      posibleGhostMoves = this.setGhostDirection();
-    }
-    this.movePacman(lastKeyMove);
-    this.moveGhost(posibleGhostMoves);
+    const { board, pacman, ghost, lastKeyMove } = this.state;
+    const posibleGhostMoves = this.ghostDirection(ghost);
+    this.movePacman(board, pacman, lastKeyMove);
+    this.isGhostScared(board, pacman, ghost);
+    this.increasePoints(board, pacman, ghost);
+    this.moveGhost(board, ghost, posibleGhostMoves);
+    this.checkForGameOver(pacman, ghost);
     this.reduceScaredCounter(ghost);
+    this.setState({ board, pacman, ghost });
+  }
+  
+  ghostDirection(ghost){
+    if (ghost.isScared) {
+       return this.setScaredGhostDirection();
+    }
+    return this.setGhostDirection();
   }
 
   setGhostDirection() {
@@ -194,9 +200,7 @@ class Game extends React.Component {
     return posibleMoves;
   }
 
-  moveGhost(posibleMoves) {
-    const { pacman } = this.state;
-    let { board, ghost } = this.state;
+  moveGhost(board, ghost, posibleMoves) {
     if (ghost.isScared && ghost.scaredCounter % 2 === 0 ) return;
     const ammountMoves = posibleMoves.length;
     const nextMove = posibleMoves[Math.floor(Math.random() * ammountMoves)];
@@ -207,7 +211,7 @@ class Game extends React.Component {
           posibleMoves.push(MOVE_UP);
           posibleMoves.push(MOVE_RIGHT);
           posibleMoves.push(MOVE_DOWN);
-          this.moveGhost(posibleMoves);
+          this.moveGhost(board, ghost, posibleMoves);
           return;
         }
         ghost.column--;
@@ -224,7 +228,7 @@ class Game extends React.Component {
           posibleMoves.push(MOVE_LEFT);
           posibleMoves.push(MOVE_RIGHT);
           posibleMoves.push(MOVE_DOWN);
-          this.moveGhost(posibleMoves);
+          this.moveGhost(board, ghost, posibleMoves);
           return;
         }
         ghost.row--;
@@ -241,7 +245,7 @@ class Game extends React.Component {
           posibleMoves.push(MOVE_LEFT);
           posibleMoves.push(MOVE_UP);
           posibleMoves.push(MOVE_DOWN);
-          this.moveGhost(posibleMoves);
+          this.moveGhost(board, ghost, posibleMoves);
           return;
         }
         ghost.column++;
@@ -253,12 +257,12 @@ class Game extends React.Component {
         }
         break;      
       case MOVE_DOWN:
-        if ( !this.isWalkable(board, ghost.row+1, ghost.column) || ghost.row+1 > ROWNS-1 ) {
+        if ( !this.isWalkable(board, ghost.row+1, ghost.column) || ghost.row+1 > ROWS-1 ) {
           posibleMoves.splice(nextMove,1);
           posibleMoves.push(MOVE_LEFT);
           posibleMoves.push(MOVE_UP);
           posibleMoves.push(MOVE_RIGHT);
-          this.moveGhost(posibleMoves);
+          this.moveGhost(board, ghost, posibleMoves);
           return;
         }
         ghost.row++;
@@ -269,11 +273,9 @@ class Game extends React.Component {
           ghost.isMovingTowardsWall = true;
         }
         break;
-        default:
+      default:
         break;
-    } 
-    this.checkForGameOver(pacman, ghost);
-    this.setState({ board, ghost });
+    }
   }
 
   reduceScaredCounter(ghost){
@@ -282,7 +284,6 @@ class Game extends React.Component {
       if( ghost.scaredCounter === 0 ){
         ghost.isScared = false;
       }
-      this.setState({ ghost });
     }
   }
 
@@ -335,9 +336,8 @@ class Game extends React.Component {
     this.setState({ lastKeyMove });
   }
 
-  movePacman(key) {
-    let { board, pacman } = this.state;
-    const { ghost, isGameOver, isGameWon, isPlaying, lastKeyMove} = this.state;
+  movePacman(board, pacman, key) {
+    const { isGameOver, isGameWon, isPlaying, lastKeyMove} = this.state;
     if (isGameOver) return;
     if (!isGameWon && !isPlaying) return;
     if (!lastKeyMove) return;
@@ -360,7 +360,7 @@ class Game extends React.Component {
         break;
       case ARROW_UP_KEY:
         if ( pacman.row === 0 ) {
-          pacman.row = ROWNS-1;  
+          pacman.row = ROWS-1;  
         } else if (!this.isWalkable(board, pacman.row-1, pacman.column)) {
           return;
         } else {
@@ -389,7 +389,7 @@ class Game extends React.Component {
         pacman.lastMove = MOVE_RIGHT;
         break;
       case ARROW_DOWN_KEY:
-        if ( pacman.row === ROWNS-1 ) {
+        if ( pacman.row === ROWS-1 ) {
           pacman.row = 0;  
         } else if (!this.isWalkable(board, pacman.row+1, pacman.column)) {
           return;
@@ -406,12 +406,6 @@ class Game extends React.Component {
       default:
         break;
     }
-    const nextSquare = board[pacman.row][pacman.column];
-    this.isGhostScared(nextSquare);
-    this.increasePoints(nextSquare);
-    this.eatDot(board, pacman);
-    this.checkForGameOver(pacman, ghost);
-    this.setState({ board, pacman });
   }
 
   isWalkable(board, nextRow, nextColumn) {
@@ -420,38 +414,49 @@ class Game extends React.Component {
       board[nextRow][nextColumn].isWalkable;
   }
 
-  eatDot(board, pacman) {
-    board[pacman.row][pacman.column] = {
-      isWalkable: true,
-      type: EMPTY
-    };
-  }
-
-  isGhostScared(nextSquare){
-    let { ghost } = this.state;
+  isGhostScared(board, pacman, ghost){
+    const nextSquare = board[pacman.row][pacman.column];
     if ( nextSquare.type === BIG_DOT ){
       ghost.isScared = true;
       ghost.scaredCounter = SCARED_SECONDS * 1000 / GAME_SPEED;
     }
-    this.setState({ ghost });
   }
 
-  increasePoints(nextSquare) {
+  increasePoints(board, pacman, ghost) {
     let { points, highestScore } = this.state;
-    const { ghost } = this.state;
+    const nextSquare = board[pacman.row][pacman.column];
     if ( nextSquare.type === DOT ) {
       if (ghost.isScared) {
-        points += 5 * DOT_POINTS; // quintuple points when ghost is scared
+        points += 5 * DOT_POINTS; // more points when ghost is scared
       } else {
         points += DOT_POINTS;
       }
+      this.eatDots(board, pacman);
     } else if ( nextSquare.type === BIG_DOT ){
       points += BIGDOT_POINTS;
+      this.eatDots(board, pacman);
     }
     if ( points >= highestScore ) {
       highestScore = points;
     }
     this.setState({ points, highestScore });
+  }
+
+  eatDots(board, pacman) {
+    board[pacman.row][pacman.column] = {
+      isWalkable: true,
+      type: EMPTY
+    };
+}
+
+  ghostIsEaten(ghost) {
+    ghost.row = 5;
+    ghost.isMovingTowardsWall = false;
+    if (ghost.column < COLUMNS/2) {
+      ghost.column = COLUMNS-1;
+    } else {
+      ghost.column = 0;
+    }
   }
 
   checkForWin() {
@@ -479,9 +484,9 @@ class Game extends React.Component {
   }
 
   checkForGameOver(pacman, ghost) {
-    if (ghost.isScared) return;
     let { isGameOver, isPlaying } = this.state;
     if (pacman.row === ghost.row && pacman.column === ghost.column) {
+      if (ghost.isScared) return this.ghostIsEaten(ghost);
       isGameOver = true;
       isPlaying = false;
       clearInterval(this.interval);
