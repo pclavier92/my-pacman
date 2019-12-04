@@ -129,15 +129,17 @@ class Game extends React.Component {
   }
 
   nextTurn() {
-    if (this.checkForWin()) return;
+    if (this.checkIfGameIsWon()) return;
     const { lastKeyMove } = this.state;
     this.pacman.move(this.map, lastKeyMove);
+    this.checkIfGameOver();
     const pacmanPosition = this.map.grid[this.pacman.row][this.pacman.column];
     this.ghost.hasBeenScared(pacmanPosition);
     this.increasePoints();
-    const posibleGhostMoves = this.ghost.direction(this.pacman);
+    const posibleGhostMoves = this.ghost.direction(this.map, this.pacman);
+    debugger;
     this.ghost.move(this.map, posibleGhostMoves);
-    this.checkForGameOver();
+    this.checkIfGameOver();
     this.ghost.reduceScaredCounter();
     this.setState({
       map: this.map.actualState(),
@@ -230,7 +232,7 @@ class Game extends React.Component {
     this.setState({ points, highestScore });
   }
 
-  checkForWin() {
+  checkIfGameIsWon() {
     let isGameWon = true;
     let isPlaying = true;
     this.map.grid.forEach(row => {
@@ -257,7 +259,7 @@ class Game extends React.Component {
     return isGameWon;
   }
 
-  checkForGameOver() {
+  checkIfGameOver() {
     let { isGameOver, isPlaying } = this.state;
     if (
       this.pacman.row === this.ghost.row &&

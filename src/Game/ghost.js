@@ -42,14 +42,15 @@ class Ghost {
     };
   }
 
-  direction(pacman) {
+  direction(map, pacman) {
     if (this.isScared) {
       return this.setScaredDirection(pacman);
     }
-    return this.setDirection(pacman);
+    return this.setDirection(map, pacman);
   }
 
-  setDirection(pacman) {
+  //TO BE DEPRECATED
+  _setDirection(map, pacman) {
     let posibleMoves = [];
     if (pacman.row < this.row) {
       posibleMoves.push(MOVE_UP);
@@ -64,6 +65,109 @@ class Ghost {
       posibleMoves.push(MOVE_RIGHT);
     }
     return posibleMoves;
+  }
+
+  setDirection(map, pacman) {
+    const posibleMoves = [];
+    let cursor;
+    let currentDistance;
+    let nextMove;
+    const matrix = map.actualState().map(() => new Array(COLUMNS).fill(null));
+    matrix[this.row][this.column] = -1;
+    matrix[pacman.row][pacman.column] = 0;
+    let pathFound = false;
+    const queue = [];
+    queue.push({
+      row: pacman.row,
+      column: pacman.column
+    });
+    while (!pathFound) {
+      cursor = queue.pop();
+      currentDistance = matrix[cursor.row][cursor.column];
+      pathFound = this.findPath(
+        queue,
+        map,
+        matrix,
+        cursor.row + 1,
+        cursor.column,
+        currentDistance,
+        pathFound
+      );
+      pathFound = this.findPath(
+        queue,
+        map,
+        matrix,
+        cursor.row - 1,
+        cursor.column,
+        currentDistance,
+        pathFound
+      );
+      pathFound = this.findPath(
+        queue,
+        map,
+        matrix,
+        cursor.row,
+        cursor.column + 1,
+        currentDistance,
+        pathFound
+      );
+      pathFound = this.findPath(
+        queue,
+        map,
+        matrix,
+        cursor.row,
+        cursor.column - 1,
+        currentDistance,
+        pathFound
+      );
+    }
+    currentDistance = ROWS * COLUMNS;
+    if (
+      matrix[this.row + 1][this.column] !== null &&
+      matrix[this.row + 1][this.column] < currentDistance
+    ) {
+      nextMove = MOVE_DOWN;
+      currentDistance = matrix[this.row + 1][this.column];
+    }
+    if (
+      matrix[this.row - 1][this.column] !== null &&
+      matrix[this.row - 1][this.column] < currentDistance
+    ) {
+      nextMove = MOVE_UP;
+      currentDistance = matrix[this.row - 1][this.column];
+    }
+    if (
+      matrix[this.row][this.column + 1] !== null &&
+      matrix[this.row][this.column + 1] < currentDistance
+    ) {
+      nextMove = MOVE_RIGHT;
+      currentDistance = matrix[this.row][this.column + 1];
+    }
+    if (
+      matrix[this.row][this.column - 1] !== null &&
+      matrix[this.row][this.column - 1] < currentDistance
+    ) {
+      nextMove = MOVE_LEFT;
+      currentDistance = matrix[this.row][this.column - 1];
+    }
+    posibleMoves.push(nextMove);
+    return posibleMoves;
+  }
+
+  findPath(queue, map, matrix, row, column, distance, pathFound) {
+    if (pathFound) return pathFound;
+    if (map.isWalkable(row, column)) {
+      if (matrix[row][column] === null) {
+        matrix[row][column] = distance + 1;
+        queue.push({
+          row: row,
+          column: column
+        });
+      } else if (matrix[row][column] === -1) {
+        pathFound = true;
+      }
+    }
+    return pathFound;
   }
 
   setScaredDirection(pacman) {
