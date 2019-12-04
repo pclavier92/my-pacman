@@ -1,4 +1,4 @@
-.board-background {
+.map-background {
   background-color: #282c34;
   position: relative;
   width: 100%;
@@ -6,7 +6,7 @@
   padding-bottom: 2em;
 }
 
-.board {
+.map {
   position: relative;
   display: inline-block;
   touch-action: none;
