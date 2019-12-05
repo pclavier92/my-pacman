@@ -137,7 +137,6 @@ class Game extends React.Component {
     this.ghost.hasBeenScared(pacmanPosition);
     this.increasePoints();
     const posibleGhostMoves = this.ghost.direction(this.map, this.pacman);
-    debugger;
     this.ghost.move(this.map, posibleGhostMoves);
     this.checkIfGameOver();
     this.ghost.reduceScaredCounter();

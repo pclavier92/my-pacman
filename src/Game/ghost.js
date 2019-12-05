@@ -4,6 +4,10 @@ import settings from "../settings";
 const { ROWS, COLUMNS, GAME_SPEED, SCARED_SECONDS } = settings;
 const { MOVE_LEFT, MOVE_UP, MOVE_RIGHT, MOVE_DOWN, BIG_DOT } = config;
 
+const EMPTY = 0;
+const GHOST = -1;
+const PACMAN = 1;
+
 class Ghost {
   constructor() {
     this.row = 5;
@@ -72,79 +76,75 @@ class Ghost {
     let cursor;
     let currentDistance;
     let nextMove;
-    const matrix = map.actualState().map(() => new Array(COLUMNS).fill(null));
-    matrix[this.row][this.column] = -1;
-    matrix[pacman.row][pacman.column] = 0;
-    let pathFound = false;
+    const matrix = map.grid.map(() => new Array(COLUMNS).fill(EMPTY));
+    matrix[this.row][this.column] = GHOST;
+    matrix[pacman.row][pacman.column] = PACMAN;
     const queue = [];
     queue.push({
       row: pacman.row,
       column: pacman.column
     });
-    while (!pathFound) {
-      cursor = queue.pop();
+    while (queue.length > 0) {
+      cursor = queue.shift();
       currentDistance = matrix[cursor.row][cursor.column];
-      pathFound = this.findPath(
+      this.findPath(
         queue,
         map,
         matrix,
         cursor.row + 1,
         cursor.column,
-        currentDistance,
-        pathFound
+        currentDistance
       );
-      pathFound = this.findPath(
+      this.findPath(
         queue,
         map,
         matrix,
         cursor.row - 1,
         cursor.column,
-        currentDistance,
-        pathFound
+        currentDistance
       );
-      pathFound = this.findPath(
+      this.findPath(
         queue,
         map,
         matrix,
         cursor.row,
         cursor.column + 1,
-        currentDistance,
-        pathFound
+        currentDistance
       );
-      pathFound = this.findPath(
+      this.findPath(
         queue,
         map,
         matrix,
         cursor.row,
         cursor.column - 1,
-        currentDistance,
-        pathFound
+        currentDistance
       );
     }
     currentDistance = ROWS * COLUMNS;
+
     if (
-      matrix[this.row + 1][this.column] !== null &&
+      matrix[this.row + 1][this.column] !== EMPTY &&
       matrix[this.row + 1][this.column] < currentDistance
     ) {
       nextMove = MOVE_DOWN;
       currentDistance = matrix[this.row + 1][this.column];
     }
     if (
-      matrix[this.row - 1][this.column] !== null &&
+      matrix[this.row - 1][this.column] !== EMPTY &&
       matrix[this.row - 1][this.column] < currentDistance
     ) {
       nextMove = MOVE_UP;
       currentDistance = matrix[this.row - 1][this.column];
     }
     if (
-      matrix[this.row][this.column + 1] !== null &&
+      matrix[this.row][this.column + 1] !== EMPTY &&
       matrix[this.row][this.column + 1] < currentDistance
     ) {
       nextMove = MOVE_RIGHT;
       currentDistance = matrix[this.row][this.column + 1];
     }
     if (
-      matrix[this.row][this.column - 1] !== null &&
+      matrix[this.row][this.column - 1] !== EMPTY &&
       matrix[this.row][this.column - 1] < currentDistance
     ) {
       nextMove = MOVE_LEFT;
@@ -154,20 +154,16 @@ class Ghost {
     return posibleMoves;
   }
 
-  findPath(queue, map, matrix, row, column, distance, pathFound) {
-    if (pathFound) return pathFound;
+  findPath(queue, map, matrix, row, column, distance) {
     if (map.isWalkable(row, column)) {
-      if (matrix[row][column] === null) {
+      if (matrix[row][column] === EMPTY) {
         matrix[row][column] = distance + 1;
         queue.push({
           row: row,
           column: column
         });
-      } else if (matrix[row][column] === -1) {
-        pathFound = true;
       }
     }
-    return pathFound;
   }
 
   setScaredDirection(pacman) {
