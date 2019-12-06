@@ -76,6 +76,7 @@ class Ghost {
     let cursor;
     let currentDistance;
     let nextMove;
+    let pathFound = false;
     const matrix = map.grid.map(() => new Array(COLUMNS).fill(EMPTY));
     matrix[this.row][this.column] = GHOST;
     matrix[pacman.row][pacman.column] = PACMAN;
@@ -84,40 +85,44 @@ class Ghost {
       row: pacman.row,
       column: pacman.column
     });
-    while (queue.length > 0) {
+    while (!pathFound) {
       cursor = queue.shift();
       currentDistance = matrix[cursor.row][cursor.column];
-      this.findPath(
+      pathFound = this.setPathDistanceAndQueue(
         queue,
         map,
         matrix,
         cursor.row + 1,
         cursor.column,
-        currentDistance
+        currentDistance,
+        pathFound
       );
-      this.findPath(
+      pathFound = this.setPathDistanceAndQueue(
         queue,
         map,
         matrix,
         cursor.row - 1,
         cursor.column,
-        currentDistance
+        currentDistance,
+        pathFound
       );
-      this.findPath(
+      pathFound = this.setPathDistanceAndQueue(
         queue,
         map,
         matrix,
         cursor.row,
         cursor.column + 1,
-        currentDistance
+        currentDistance,
+        pathFound
       );
-      this.findPath(
+      pathFound = this.setPathDistanceAndQueue(
         queue,
         map,
         matrix,
         cursor.row,
         cursor.column - 1,
-        currentDistance
+        currentDistance,
+        pathFound
       );
     }
     currentDistance = ROWS * COLUMNS;
@@ -154,7 +159,16 @@ class Ghost {
     return posibleMoves;
   }
 
-  findPath(queue, map, matrix, row, column, distance) {
+  setPathDistanceAndQueue(
+    queue,
+    map,
+    matrix,
+    row,
+    column,
+    distance,
+    pathFound
+  ) {
+    if (pathFound) return pathFound;
     if (map.isWalkable(row, column)) {
       if (matrix[row][column] === EMPTY) {
         matrix[row][column] = distance + 1;
@@ -162,8 +176,11 @@ class Ghost {
           row: row,
           column: column
         });
+      } else if (matrix[row][column] === GHOST) {
+        return true;
       }
     }
+    return false;
   }
 
   setScaredDirection(pacman) {
