@@ -136,8 +136,8 @@ class Game extends React.Component {
     const pacmanPosition = this.map.grid[this.pacman.row][this.pacman.column];
     this.ghost.hasBeenScared(pacmanPosition);
     this.increasePoints();
-    const posibleGhostMoves = this.ghost.direction(this.map, this.pacman);
-    this.ghost.move(this.map, posibleGhostMoves);
+    const ghostNextMove = this.ghost.direction(this.map, this.pacman);
+    this.ghost.move(this.map, ghostNextMove);
     this.checkIfGameOver();
     this.ghost.reduceScaredCounter();
     this.setState({

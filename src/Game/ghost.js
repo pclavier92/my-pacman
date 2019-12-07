@@ -48,31 +48,12 @@ class Ghost {
 
   direction(map, pacman) {
     if (this.isScared) {
-      return this.setScaredDirection(pacman);
+      return this.setScaredDirection(map, pacman);
     }
     return this.setDirection(map, pacman);
   }
 
-  //TO BE DEPRECATED
-  _setDirection(map, pacman) {
-    let posibleMoves = [];
-    if (pacman.row < this.row) {
-      posibleMoves.push(MOVE_UP);
-    }
-    if (pacman.row > this.row) {
-      posibleMoves.push(MOVE_DOWN);
-    }
-    if (pacman.column < this.column) {
-      posibleMoves.push(MOVE_LEFT);
-    }
-    if (pacman.column > this.column) {
-      posibleMoves.push(MOVE_RIGHT);
-    }
-    return posibleMoves;
-  }
-
   setDirection(map, pacman) {
-    const posibleMoves = [];
     let cursor;
     let currentDistance;
     let nextMove;
@@ -85,7 +66,7 @@ class Ghost {
       row: pacman.row,
       column: pacman.column
     });
-    while (!pathFound) {
+    while (!pathFound && queue.length > 0) {
       cursor = queue.shift();
       currentDistance = matrix[cursor.row][cursor.column];
       pathFound = this.setPathDistanceAndQueue(
@@ -128,6 +109,7 @@ class Ghost {
     currentDistance = ROWS * COLUMNS;
 
     if (
+      matrix[this.row + 1] &&
       matrix[this.row + 1][this.column] !== EMPTY &&
       matrix[this.row + 1][this.column] < currentDistance
     ) {
@@ -135,6 +117,7 @@ class Ghost {
       currentDistance = matrix[this.row + 1][this.column];
     }
     if (
+      matrix[this.row - 1] &&
       matrix[this.row - 1][this.column] !== EMPTY &&
       matrix[this.row - 1][this.column] < currentDistance
     ) {
@@ -142,6 +125,7 @@ class Ghost {
       currentDistance = matrix[this.row - 1][this.column];
     }
     if (
+      matrix[this.row][this.column + 1] &&
       matrix[this.row][this.column + 1] !== EMPTY &&
       matrix[this.row][this.column + 1] < currentDistance
     ) {
@@ -149,14 +133,14 @@ class Ghost {
       currentDistance = matrix[this.row][this.column + 1];
     }
     if (
+      matrix[this.row][this.column - 1] &&
       matrix[this.row][this.column - 1] !== EMPTY &&
       matrix[this.row][this.column - 1] < currentDistance
     ) {
       nextMove = MOVE_LEFT;
       currentDistance = matrix[this.row][this.column - 1];
     }
-    posibleMoves.push(nextMove);
-    return posibleMoves;
+    return nextMove;
   }
 
   setPathDistanceAndQueue(
@@ -183,104 +167,64 @@ class Ghost {
     return false;
   }
 
-  setScaredDirection(pacman) {
+  setScaredDirection(map, pacman) {
     let posibleMoves = [];
     if (pacman.row > this.row) {
-      posibleMoves.push(MOVE_UP);
+      if (map.isWalkable(this.row - 1, this.column)) {
+        posibleMoves.push(MOVE_UP);
+      }
     }
     if (pacman.row < this.row) {
-      posibleMoves.push(MOVE_DOWN);
+      if (map.isWalkable(this.row + 1, this.column)) {
+        posibleMoves.push(MOVE_DOWN);
+      }
     }
     if (pacman.column > this.column) {
-      posibleMoves.push(MOVE_LEFT);
+      if (map.isWalkable(this.row, this.column - 1)) {
+        posibleMoves.push(MOVE_LEFT);
+      }
     }
     if (pacman.column < this.column) {
-      posibleMoves.push(MOVE_RIGHT);
+      if (map.isWalkable(this.row, this.column + 1)) {
+        posibleMoves.push(MOVE_RIGHT);
+      }
     }
-    return posibleMoves;
-  }
-
-  move(map, posibleMoves) {
-    if (this.isScared && this.scaredCounter % 2 === 0) return;
     const ammountMoves = posibleMoves.length;
     const nextMove = posibleMoves[Math.floor(Math.random() * ammountMoves)];
+    return nextMove;
+  }
+
+  move(map, nextMove) {
+    if (!nextMove || (this.isScared && this.scaredCounter % 2 === 0)) return;
+    let nextRow = this.row;
+    let nextColumn = this.column;
+    this.isMovingTowardsWall = false;
     switch (nextMove) {
       case MOVE_LEFT:
-        if (!map.isWalkable(this.row, this.column - 1) || this.column - 1 < 0) {
-          posibleMoves.splice(nextMove, 1);
-          posibleMoves.push(MOVE_UP);
-          posibleMoves.push(MOVE_RIGHT);
-          posibleMoves.push(MOVE_DOWN);
-          this.move(map, posibleMoves);
-          return;
-        }
-        this.column--;
         this.lastMove = MOVE_LEFT;
-        if (map.isWalkable(this.row, this.column - 1)) {
-          this.isMovingTowardsWall = false;
-        } else {
-          this.isMovingTowardsWall = true;
-        }
+        this.column--;
+        nextColumn = this.column - 1;
         break;
       case MOVE_UP:
-        if (!map.isWalkable(this.row - 1, this.column) || this.row - 1 < 0) {
-          posibleMoves.splice(nextMove, 1);
-          posibleMoves.push(MOVE_LEFT);
-          posibleMoves.push(MOVE_RIGHT);
-          posibleMoves.push(MOVE_DOWN);
-          this.move(map, posibleMoves);
-          return;
-        }
-        this.row--;
         this.lastMove = MOVE_UP;
-        if (map.isWalkable(this.row - 1, this.column)) {
-          this.isMovingTowardsWall = false;
-        } else {
-          this.isMovingTowardsWall = true;
-        }
+        this.row--;
+        nextRow = this.row - 1;
         break;
       case MOVE_RIGHT:
-        if (
-          !map.isWalkable(this.row, this.column + 1) ||
-          this.column + 1 > COLUMNS - 1
-        ) {
-          posibleMoves.splice(nextMove, 1);
-          posibleMoves.push(MOVE_LEFT);
-          posibleMoves.push(MOVE_UP);
-          posibleMoves.push(MOVE_DOWN);
-          this.move(map, posibleMoves);
-          return;
-        }
-        this.column++;
         this.lastMove = MOVE_RIGHT;
-        if (map.isWalkable(this.row, this.column + 1)) {
-          this.isMovingTowardsWall = false;
-        } else {
-          this.isMovingTowardsWall = true;
-        }
+        this.column++;
+        nextColumn = this.column + 1;
         break;
       case MOVE_DOWN:
-        if (
-          !map.isWalkable(this.row + 1, this.column) ||
-          this.row + 1 > ROWS - 1
-        ) {
-          posibleMoves.splice(nextMove, 1);
-          posibleMoves.push(MOVE_LEFT);
-          posibleMoves.push(MOVE_UP);
-          posibleMoves.push(MOVE_RIGHT);
-          this.move(map, posibleMoves);
-          return;
-        }
-        this.row++;
         this.lastMove = MOVE_DOWN;
-        if (map.isWalkable(this.row + 1, this.column)) {
-          this.isMovingTowardsWall = false;
-        } else {
-          this.isMovingTowardsWall = true;
-        }
+        this.row++;
+        nextRow = this.row + 1;
         break;
       default:
         break;
+    }
+    if (!map.isWalkable(nextRow, nextColumn)) {
+      this.isMovingTowardsWall = true;
     }
   }
 

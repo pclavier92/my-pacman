@@ -10,71 +10,61 @@ const {
   TOP_LEFT_CORNER_WALL,
   TOP_RIGHT_CORNER_WALL,
   BOTTOM_RIGHT_CORNER_WALL,
-  BOTTOM_LEFT_CORNER_WALL
+  BOTTOM_LEFT_CORNER_WALL,
+  LEFT_END_WALL,
+  RIGHT_END_WALL,
+  UP_END_WALL,
+  DOWN_END_WALL
 } = config;
-const { COLUMNS, ROWS } = settings;
+// const { COLUMNS, ROWS } = settings;
 
-const empty = Object.freeze({
-  isWalkable: true,
-  type: EMPTY
-});
-const dot = Object.freeze({
-  isWalkable: true,
-  type: DOT
-});
-const bigDot = Object.freeze({
-  isWalkable: true,
-  type: BIG_DOT
-});
-const verticalWall = Object.freeze({
-  isWalkable: false,
-  type: VERTICAL_WALL
-});
-const horizontalWall = Object.freeze({
-  isWalkable: false,
-  type: HORIZONTAL_WALL
-});
+const createWalkable = type =>
+  Object.freeze({
+    isWalkable: true,
+    type
+  });
 
-const topLeftConrnerWall = Object.freeze({
-  isWalkable: false,
-  type: TOP_LEFT_CORNER_WALL
-});
+const createNotWalkable = type =>
+  Object.freeze({
+    isWalkable: false,
+    type
+  });
 
-const topRightCornerWall = Object.freeze({
-  isWalkable: false,
-  type: TOP_RIGHT_CORNER_WALL
-});
+const empty = createWalkable(EMPTY);
+const dot = createWalkable(DOT);
+const bigDot = createWalkable(BIG_DOT);
 
-const bottomRightCornerWall = Object.freeze({
-  isWalkable: false,
-  type: BOTTOM_RIGHT_CORNER_WALL
-});
+const verticalWall = createNotWalkable(VERTICAL_WALL);
+const horizontalWall = createNotWalkable(HORIZONTAL_WALL);
+const topLeftConrnerWall = createNotWalkable(TOP_LEFT_CORNER_WALL);
+const topRightCornerWall = createNotWalkable(TOP_RIGHT_CORNER_WALL);
+const bottomRightCornerWall = createNotWalkable(BOTTOM_RIGHT_CORNER_WALL);
+const bottomLeftCornerWAll = createNotWalkable(BOTTOM_LEFT_CORNER_WALL);
+const leftEndWall = createNotWalkable(LEFT_END_WALL);
+const rightEndWall = createNotWalkable(RIGHT_END_WALL);
+const upEndWall = createNotWalkable(UP_END_WALL);
+const downEndWall = createNotWalkable(DOWN_END_WALL);
 
-const bottomLeftCornerWAll = Object.freeze({
-  isWalkable: false,
-  type: BOTTOM_LEFT_CORNER_WALL
-});
+// const createDotFilledRow = () => new Array(COLUMNS).fill(dot);
+// const createFirstRow = () => {
+//   const row = new Array(COLUMNS - 2).fill(dot);
+//   row.unshift(empty);
+//   row.push(bigDot);
+//   return row;
+// };
+// const createLastRow = () => {
+//   const row = new Array(COLUMNS - 2).fill(dot);
+//   row.push(bigDot);
+//   row.unshift(bigDot);
+//   return row;
+// };
 
-const createDotFilledRow = () => new Array(COLUMNS).fill(dot);
-const createFirstRow = () => {
-  const row = new Array(COLUMNS - 2).fill(dot);
-  row.unshift(empty);
-  row.push(bigDot);
-  return row;
-};
-const createLastRow = () => {
-  const row = new Array(COLUMNS - 2).fill(dot);
-  row.push(bigDot);
-  row.unshift(bigDot);
-  return row;
-};
-
-export const generateDynamicMap = () => {
-  const map = new Array(ROWS - 2).fill(createDotFilledRow());
-  map.unshift(createFirstRow());
-  map.unshift(createLastRow());
-  return map;
-};
+// export const generateDynamicMap = () => {
+//   const map = new Array(ROWS - 2).fill(createDotFilledRow());
+//   map.unshift(createFirstRow());
+//   map.unshift(createLastRow());
+//   return map;
+// };
 
 export const getInitialMap = () => [
   [
@@ -89,9 +79,9 @@ export const getInitialMap = () => [
     horizontalWall,
     horizontalWall,
     horizontalWall,
-    horizontalWall,
+    rightEndWall,
     empty,
-    horizontalWall,
+    leftEndWall,
     horizontalWall,
     horizontalWall,
     horizontalWall,
@@ -134,7 +124,7 @@ export const getInitialMap = () => [
   [
     verticalWall,
     dot,
-    horizontalWall,
+    leftEndWall,
     topRightCornerWall,
     dot,
     topLeftConrnerWall,
@@ -143,9 +133,9 @@ export const getInitialMap = () => [
     dot,
     topLeftConrnerWall,
     horizontalWall,
-    horizontalWall,
+    rightEndWall,
     dot,
-    horizontalWall,
+    leftEndWall,
     horizontalWall,
     topRightCornerWall,
     dot,
@@ -154,7 +144,7 @@ export const getInitialMap = () => [
     topRightCornerWall,
     dot,
     topLeftConrnerWall,
-    horizontalWall,
+    rightEndWall,
     dot,
     verticalWall
   ],
@@ -186,31 +176,31 @@ export const getInitialMap = () => [
     verticalWall
   ],
   [
-    verticalWall,
+    downEndWall,
     dot,
-    horizontalWall,
+    leftEndWall,
     bottomRightCornerWall,
     dot,
-    verticalWall,
+    downEndWall,
     dot,
-    verticalWall,
+    downEndWall,
     dot,
-    verticalWall,
+    downEndWall,
     dot,
     topLeftConrnerWall,
     dot,
     topRightCornerWall,
     dot,
-    verticalWall,
+    downEndWall,
     dot,
-    verticalWall,
+    downEndWall,
     dot,
-    verticalWall,
+    downEndWall,
     dot,
     bottomLeftCornerWAll,
-    horizontalWall,
+    rightEndWall,
     dot,
-    verticalWall
+    downEndWall
   ],
   [
     empty,
@@ -240,31 +230,31 @@ export const getInitialMap = () => [
     empty
   ],
   [
-    verticalWall,
+    upEndWall,
     dot,
-    horizontalWall,
+    leftEndWall,
     topRightCornerWall,
     dot,
-    verticalWall,
+    upEndWall,
     dot,
-    verticalWall,
+    upEndWall,
     dot,
-    verticalWall,
+    upEndWall,
     dot,
     bottomLeftCornerWAll,
     dot,
     bottomRightCornerWall,
     dot,
-    verticalWall,
+    upEndWall,
     dot,
-    verticalWall,
+    upEndWall,
     dot,
-    verticalWall,
+    upEndWall,
     dot,
     topLeftConrnerWall,
-    horizontalWall,
+    rightEndWall,
     dot,
-    verticalWall
+    upEndWall
   ],
   [
     verticalWall,
@@ -296,7 +286,7 @@ export const getInitialMap = () => [
   [
     verticalWall,
     dot,
-    horizontalWall,
+    leftEndWall,
     bottomRightCornerWall,
     dot,
     bottomLeftCornerWAll,
@@ -305,9 +295,9 @@ export const getInitialMap = () => [
     dot,
     bottomLeftCornerWAll,
     horizontalWall,
-    horizontalWall,
+    rightEndWall,
     dot,
-    horizontalWall,
+    leftEndWall,
     horizontalWall,
     bottomRightCornerWall,
     dot,
@@ -316,7 +306,7 @@ export const getInitialMap = () => [
     bottomRightCornerWall,
     dot,
     bottomLeftCornerWAll,
-    horizontalWall,
+    rightEndWall,
     dot,
     verticalWall
   ],
@@ -359,9 +349,9 @@ export const getInitialMap = () => [
     horizontalWall,
     horizontalWall,
     horizontalWall,
-    horizontalWall,
+    rightEndWall,
     empty,
-    horizontalWall,
+    leftEndWall,
     horizontalWall,
     horizontalWall,
     horizontalWall,

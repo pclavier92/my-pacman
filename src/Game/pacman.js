@@ -44,69 +44,51 @@ class Pacman {
   }
 
   move(map, lastKeyMove) {
+    let nextRow = this.row;
+    let nextColumn = this.column;
+    this.isMovingTowardsWall = false;
     switch (lastKeyMove) {
       case ARROW_LEFT_KEY:
         if (this.column === 0) {
           this.column = COLUMNS - 1;
-        } else if (!map.isWalkable(this.row, this.column - 1)) {
-          return;
-        } else {
+        } else if (map.isWalkable(this.row, this.column - 1)) {
           this.column--;
-          if (map.isWalkable(this.row, this.column - 1)) {
-            this.isMovingTowardsWall = false;
-          } else {
-            this.isMovingTowardsWall = true;
-          }
         }
+        nextColumn = this.column - 1;
         this.lastMove = MOVE_LEFT;
         break;
       case ARROW_UP_KEY:
         if (this.row === 0) {
           this.row = ROWS - 1;
-        } else if (!map.isWalkable(this.row - 1, this.column)) {
-          return;
-        } else {
+        } else if (map.isWalkable(this.row - 1, this.column)) {
           this.row--;
-          if (map.isWalkable(this.row - 1, this.column)) {
-            this.isMovingTowardsWall = false;
-          } else {
-            this.isMovingTowardsWall = true;
-          }
         }
+        nextRow = this.row - 1;
         this.lastMove = MOVE_UP;
         break;
       case ARROW_RIGHT_KEY:
         if (this.column === COLUMNS - 1) {
           this.column = 0;
-        } else if (!map.isWalkable(this.row, this.column + 1)) {
-          return;
-        } else {
+        } else if (map.isWalkable(this.row, this.column + 1)) {
           this.column++;
-          if (map.isWalkable(this.row, this.column + 1)) {
-            this.isMovingTowardsWall = false;
-          } else {
-            this.isMovingTowardsWall = true;
-          }
         }
+        nextColumn = this.column + 1;
         this.lastMove = MOVE_RIGHT;
         break;
       case ARROW_DOWN_KEY:
         if (this.row === ROWS - 1) {
           this.row = 0;
-        } else if (!map.isWalkable(this.row + 1, this.column)) {
-          return;
-        } else {
+        } else if (map.isWalkable(this.row + 1, this.column)) {
           this.row++;
-          if (map.isWalkable(this.row + 1, this.column)) {
-            this.isMovingTowardsWall = false;
-          } else {
-            this.isMovingTowardsWall = true;
-          }
         }
+        nextRow = this.row + 1;
         this.lastMove = MOVE_DOWN;
         break;
       default:
         break;
+    }
+    if (!map.isWalkable(nextRow, nextColumn)) {
+      this.isMovingTowardsWall = true;
     }
   }
 }
